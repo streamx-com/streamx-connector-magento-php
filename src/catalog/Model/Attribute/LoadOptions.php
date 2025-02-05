@@ -45,14 +45,8 @@ class LoadOptions
                 $options = $source->getAllOptions();
             } else {
                 $loadSwatches = $this->isVisualSwatch($attribute);
-                $optionCollection = $this->getOptionCollection($attribute);
-                $additionalFields = [];
-
-                if ($loadSwatches) {
-                    $additionalFields['swatch'] = 'swatch';
-                }
-
-                $options = $this->toOptionArray($optionCollection, $additionalFields);
+                $optionCollection = $this->getOptionCollection($attribute, $loadSwatches);
+                $options = OptionCollectionToArray::execute($optionCollection, $loadSwatches);
             }
 
             $this->optionsByAttribute[$key] = $options;
@@ -72,9 +66,8 @@ class LoadOptions
         return false;
     }
 
-    private function getOptionCollection(Attribute $attribute): OptionCollection
+    private function getOptionCollection(Attribute $attribute, bool $loadSwatches): OptionCollection
     {
-        $loadSwatches = $this->isVisualSwatch($attribute);
         $attributeId = $attribute->getAttributeId();
         $storeId = $attribute->getStoreId();
 
@@ -105,8 +98,4 @@ class LoadOptions
             || $attribute->getData('swatch_input_type') === Swatch::SWATCH_INPUT_TYPE_TEXT;
     }
 
-    private function toOptionArray(OptionCollection $collection, array $additional): array
-    {
-        return OptionCollectionToArray::execute($collection, $additional);
-    }
 }

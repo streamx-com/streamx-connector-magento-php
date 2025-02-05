@@ -8,40 +8,25 @@ use Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection as Option
 
 class OptionCollectionToArray
 {
-    public static function execute(OptionCollection $collection, array $additional = []): array
+    public static function execute(OptionCollection $collection, bool $loadSwatches): array
     {
         $res = [];
-        $additional['value'] = 'option_id';
-        $additional['label'] = 'value';
-        $additional['sort_order'] = 'sort_order';
 
         foreach ($collection as $item) {
             $data = [];
 
-            foreach ($additional as $code => $field) {
-                $value = $item->getData($field);
+            $data['value'] = (string)$item->getData('option_id');
+            $data['label'] = $item->getData('value');
+            $data['sort_order'] = (int)$item->getData('sort_order'); // TODO: can be removed
 
-                if ('sort_order' === $field) {
-                    $value = (int)$value;
-                }
-
-                if ('option_id' === $field) {
-                    $value = (string)$value;
-                }
-
-                if ('swatch' === $field) {
-                    $value = [
-                        'type' => (int)$item->getData('swatch_type'),
-                        'value' => $item->getData('swatch_value')
-                    ];
-                }
-
-                $data[$code] = $value;
+            if ($loadSwatches) {
+                $data['swatch'] = [
+                    'type' => (int)$item->getData('swatch_type'),
+                    'value' => $item->getData('swatch_value')
+                ];
             }
 
-            if ($data) {
-                $res[] = $data;
-            }
+            $res[] = $data;
         }
 
         return $res;
