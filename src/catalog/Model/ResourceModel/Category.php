@@ -54,14 +54,13 @@ class Category
      */
     public function getProductCategoriesMap(int $storeId, array $productIds): array
     {
-        $metaData = $this->categoryMetaData->get();
         $select = $this->getConnection()->select()->from(
-            ['entity' => $metaData->getEntityTable()]
+            ['entity' => $this->categoryMetaData->getEntityTable()]
         );
 
         $this->selectModifier->modifyAll($select, $storeId);
         $table = $this->resource->getTableName('catalog_category_product');
-        $entityIdField = $this->categoryMetaData->get()->getIdentifierField();
+        $entityIdField = $this->categoryMetaData->getEntityIdField();
         $select->reset(Zend_Db_Select::COLUMNS);
         $select->joinInner(
             ['cpi' => $table],
@@ -92,11 +91,10 @@ class Category
      */
     public function getParentIds(array $categoryIds): array
     {
-        $metaData = $this->categoryMetaData->get();
-        $entityField = $metaData->getIdentifierField();
+        $entityField = $this->categoryMetaData->getEntityIdField();
 
         $select = $this->getConnection()->select()->from(
-            ['entity' => $metaData->getEntityTable()],
+            ['entity' => $this->categoryMetaData->getEntityTable()],
             ['path']
         );
 
@@ -129,11 +127,10 @@ class Category
      */
     public function getAllSubCategories(int $categoryId): array
     {
-        $metaData = $this->categoryMetaData->get();
-        $entityField = $metaData->getIdentifierField();
+        $entityField = $this->categoryMetaData->getEntityIdField();
         $connection = $this->getConnection();
         $select = $connection->select()->from(
-            ['entity' => $metaData->getEntityTable()],
+            ['entity' => $this->categoryMetaData->getEntityTable()],
             [$entityField]
         );
 
@@ -148,9 +145,8 @@ class Category
         return $this->resource->getConnection();
     }
 
-    public static function getCategoriesBaseSelect(ResourceConnection $resource, CategoryMetaData $categoryMetaData): Select
+    public static function getCategoriesBaseSelect(ResourceConnection $resource, CategoryMetaData $metaData): Select
     {
-        $metaData = $categoryMetaData->get();
         $linkField = $metaData->getLinkField();
 
         return $resource->getConnection()

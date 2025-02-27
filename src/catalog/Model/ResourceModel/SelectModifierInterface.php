@@ -7,7 +7,7 @@ use Magento\Framework\DB\Select;
 interface SelectModifierInterface
 {
     /**
-     * Modify the select statement
+     * Modifies the Select to select only rows that match additional conditions
      */
     public function modify(Select $select, int $storeId): void;
 }

@@ -129,8 +129,8 @@ class Configurable
     private function getConfigurableProductIds(): array
     {
         if (null === $this->configurableProductIds) {
-            $linkField = $this->productMetaData->get()->getLinkField();
-            $entityField = $this->productMetaData->get()->getIdentifierField();
+            $linkField = $this->productMetaData->getLinkField();
+            $entityField = $this->productMetaData->getIdentifierField();
 
             $this->configurableProductIds = [];
             $products = $this->productsData;

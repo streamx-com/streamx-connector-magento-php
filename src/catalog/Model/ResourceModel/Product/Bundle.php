@@ -37,7 +37,7 @@ class Bundle
      */
     public function setProducts(array $products): void
     {
-        $linkField = $this->productMetaData->get()->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
 
         foreach ($products as $product) {
             $this->products[$product[$linkField]] = $product;
@@ -229,7 +229,7 @@ class Bundle
 
             foreach ($this->products as $productData) {
                 if ('bundle' === $productData['type_id']) {
-                    $linkFieldId = $this->productMetaData->get()->getLinkField();
+                    $linkFieldId = $this->productMetaData->getLinkField();
                     $this->bundleProductIds[] = $productData[$linkFieldId];
                 }
             }

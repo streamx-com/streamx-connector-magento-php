@@ -12,16 +12,27 @@ use StreamX\ConnectorCatalog\Model\ProductMetaData;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Helper as DbHelper;
 use Magento\Framework\DB\Select;
+use Zend_Db_Expr;
+use Zend_Db_Select_Exception;
 
 class Product
 {
+    private const PRODUCT_ATTRIBUTE_TABLES = [
+        'catalog_product_entity_datetime',
+        'catalog_product_entity_decimal',
+        'catalog_product_entity_gallery',
+        'catalog_product_entity_int',
+        'catalog_product_entity_text',
+        'catalog_product_entity_varchar'
+    ];
+
     private ResourceConnection $resourceConnection;
     private DbHelper $dbHelper;
     private CatalogConfig $productSettings;
     private ?array $configurableAttributeIds = null;
     private ProductMetaData $productMetaData;
-    private CompositeSelectModifier $mainProductSelectModifier;
-    private CompositeSelectModifier $childProductSelectModifier;
+    private CompositeSelectModifier $websiteAndStatusAndVisibleSelectModifier;
+    private CompositeSelectModifier $websiteAndStatusSelectModifier;
 
     public function __construct(
         CatalogConfig $configSettings,
@@ -35,8 +46,8 @@ class Product
         $this->resourceConnection = $resourceConnection;
         $this->dbHelper = $dbHelper;
         $this->productSettings = $configSettings;
-        $this->mainProductSelectModifier = new CompositeSelectModifier($currentWebsiteSelectModifier, $statusEnabledSelectModifier, $visibleSelectModifier);
-        $this->childProductSelectModifier = new CompositeSelectModifier($currentWebsiteSelectModifier, $statusEnabledSelectModifier); // load child products even if configured as not visible
+        $this->websiteAndStatusAndVisibleSelectModifier = new CompositeSelectModifier($currentWebsiteSelectModifier, $statusEnabledSelectModifier, $visibleSelectModifier);
+        $this->websiteAndStatusSelectModifier = new CompositeSelectModifier($currentWebsiteSelectModifier, $statusEnabledSelectModifier);
         $this->productMetaData = $productMetaData;
     }
 
@@ -72,7 +83,7 @@ class Product
      * Prepares product select for selecting main products
      */
     private function prepareProductSelect(array $columns, int $storeId): Select {
-        $select = $this->prepareBaseProductSelect($columns, $storeId, $this->mainProductSelectModifier);
+        $select = $this->prepareBaseProductSelect($columns, $storeId, $this->websiteAndStatusAndVisibleSelectModifier);
         $this->addProductTypeFilter($select);
         $select->order('entity.entity_id ASC');
         return $select;
@@ -85,7 +96,7 @@ class Product
     {
         $select = $this->getConnection()->select()
             ->from(
-                ['entity' => $this->productMetaData->get()->getEntityTable()],
+                ['entity' => $this->productMetaData->getEntityTable()],
                 $requiredColumns
             );
 
@@ -96,16 +107,15 @@ class Product
 
     private function getRequiredColumns(): array
     {
-        $productMetaData = $this->productMetaData->get();
         $columns = [
             'entity_id',
             'type_id',
             'sku',
         ];
 
-        $linkField = $productMetaData->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
 
-        if ($productMetaData->getIdentifierField() !== $linkField) {
+        if ($this->productMetaData->getIdentifierField() !== $linkField) {
             $columns[] = $linkField;
         }
 
@@ -116,8 +126,8 @@ class Product
      */
     public function loadChildrenProducts(array $parentIds, int $storeId): array
     {
-        $linkField = $this->productMetaData->get()->getLinkField();
-        $entityId = $this->productMetaData->get()->getIdentifierField();
+        $linkField = $this->productMetaData->getLinkField();
+        $entityId = $this->productMetaData->getIdentifierField();
         $columns = [
             'sku',
             $entityId,
@@ -127,7 +137,8 @@ class Product
             $columns[] = $linkField;
         }
 
-        $select = $this->prepareBaseProductSelect($columns, $storeId, $this->childProductSelectModifier);
+        // when loading children (variants) for a configurable product, don't filter by visibility
+        $select = $this->prepareBaseProductSelect($columns, $storeId, $this->websiteAndStatusSelectModifier);
 
         $select->join(
             ['link_table' => $this->resourceConnection->getTableName('catalog_product_super_link')],
@@ -149,49 +160,107 @@ class Product
         $select->where('entity.type_id IN (?)', $types);
     }
 
-    public function retrieveAllVariantParentAndChildIds(array $productIds): array
+    /**
+     * @param int[] $attributeIds
+     * @return int[]
+     * @throws Zend_Db_Select_Exception
+     */
+    // TODO add conditions for products only from current website / active / visible
+    public function loadIdsOfProductsThatUseAttributes(array $attributeIds, int $storeId): array
     {
-        /** The full query to load all parent and child IDs for the given products (community DB version) is:
-         * SELECT
-         *        child.entity_id AS child_id,
-         *        child.type_id AS child_type,
-         *        child.sku AS child_sku,
-         *        parent.entity_id AS parent_id,
-         *        parent.type_id AS parent_type,
-         *        parent.sku AS parent_sku
-         *   FROM catalog_product_entity child
-         *   JOIN catalog_product_relation relation ON relation.child_id = child.entity_id
-         *   JOIN catalog_product_entity parent ON parent.entity_id = relation.parent_id
-         *  WHERE parent.type_id = 'configurable'
-         *    AND (child.entity_id IN ($productIds) OR parent.entity_id IN ($productIds))
-         *  ORDER BY child_id, parent_id
+        if (empty($attributeIds)) {
+            return [];
+        }
+
+        $linkField = $this->productMetaData->getLinkField();
+        $connection = $this->resourceConnection->getConnection();
+
+        $selectProductIdsQueries = [];
+        foreach (self::PRODUCT_ATTRIBUTE_TABLES as $table) {
+            // select values of all [row_id] or [entity_id] from each product attributes table
+            $selectProductIdsQueries[] = $connection->select()
+                ->from($this->resourceConnection->getTableName($table), [$linkField])
+                ->distinct()
+                ->where('attribute_id IN(?)', $attributeIds);
+        }
+
+        // union results of all the selects
+        $selectProductIdsUnionQuery = $connection->select()->union($selectProductIdsQueries);
+
+        // select actual entity_ids from main products table, that have the product ids found in all the product attribute tables
+        $selectProductEntityIds = $connection->select()
+            ->from(['entity' => $this->productMetaData->getEntityTable()], ['entity_id'])
+            ->distinct()
+            ->where("entity.$linkField IN(?)", new Zend_Db_Expr($selectProductIdsUnionQuery))
+            ->order('entity_id');
+
+        $this->websiteAndStatusAndVisibleSelectModifier->modifyAll($selectProductEntityIds, $storeId);
+
+        return $connection->fetchCol($selectProductEntityIds);
+    }
+
+    /**
+     * @param int[] $productIds
+     * @return int[]
+     */
+    public function retrieveParentsForVariants(array $productIds, int $storeId): array
+    {
+        /** The base query (for community DB version) is:
+         * SELECT DISTINCT entity.entity_id AS parentId
+         *   FROM catalog_product_entity entity
+         *   JOIN catalog_product_relation relation ON relation.parent_id = entity.entity_id
+         *  WHERE entity.type_id = 'configurable'
+         *    AND relation.child_id IN ($productIds)
+         *  ORDER BY entity.entity_id
          */
-        $metadata = $this->productMetaData->get();
-        $linkFieldId = $metadata->getLinkField();
-        $productIdField = $metadata->getIdentifierField();
-        $entityTable = $this->resourceConnection->getTableName($metadata->getEntityTable());
+        $linkFieldId = $this->productMetaData->getLinkField();
+        $productIdField = $this->productMetaData->getIdentifierField();
+        $entityTable = $this->resourceConnection->getTableName($this->productMetaData->getEntityTable());
         $relationTable = $this->resourceConnection->getTableName('catalog_product_relation');
         $productIdsString = implode(',', $productIds);
 
         $select = $this->getConnection()->select()
-            ->from(['child' => $entityTable], ['child_id' => $productIdField])
-            ->join(['relation' => $relationTable], "relation.child_id = child.$linkFieldId", ['parent_id'])
-            ->join(['parent' => $entityTable], "relation.parent_id = parent.$linkFieldId", [])
-            ->where(
-                sprintf('%s AND (%s OR %s)',
-                    "parent.type_id = 'configurable'",
-                    "relation.parent_id IN($productIdsString)",
-                    "relation.child_id IN($productIdsString)"
-            ));
+            ->from(['entity' => $entityTable], $productIdField)
+            ->join(['relation' => $relationTable], "relation.parent_id = entity.$linkFieldId", [])
+            ->where("entity.type_id = 'configurable'")
+            ->where("relation.child_id IN($productIdsString)");
 
-        $rows = $this->getConnection()->fetchAll($select);
+        $this->websiteAndStatusAndVisibleSelectModifier->modifyAll($select, $storeId);
 
-        $resultIds = [];
-        foreach ($rows as $row) {
-            $resultIds[] = (int) $row['child_id'];
-            $resultIds[] = (int) $row['parent_id'];
-        }
-        return array_unique($resultIds);
+        return array_map('intval', $this->getConnection()->fetchCol($select));
+    }
+
+    /**
+     * @param int[] $productIds
+     * @return int[]
+     */
+    public function retrieveVariantsForParents(array $productIds, int $storeId): array
+    {
+        /** The base query (for community DB version) is:
+         * SELECT DISTINCT entity.entity_id AS childId
+         *   FROM catalog_product_entity entity
+         *   JOIN catalog_product_relation relation ON relation.child_id = entity.entity_id
+         *   JOIN catalog_product_entity parent ON parent.entity_id = relation.parent_id
+         *  WHERE parent.type_id = 'configurable'
+         *    AND relation.parent_id IN ($productIds)
+         *  ORDER BY entity.entity_id
+        */
+        $linkFieldId = $this->productMetaData->getLinkField();
+        $productIdField = $this->productMetaData->getIdentifierField();
+        $entityTable = $this->resourceConnection->getTableName($this->productMetaData->getEntityTable());
+        $relationTable = $this->resourceConnection->getTableName('catalog_product_relation');
+        $productIdsString = implode(',', $productIds);
+
+        $select = $this->getConnection()->select()
+            ->from(['entity' => $entityTable], $productIdField)
+            ->join(['relation' => $relationTable], "relation.child_id = entity.$linkFieldId", [])
+            ->join(['parent' => $entityTable], "parent.$linkFieldId = relation.parent_id", [])
+            ->where("parent.type_id = 'configurable'")
+            ->where("relation.parent_id IN($productIdsString)");
+
+        $this->websiteAndStatusAndVisibleSelectModifier->modifyAll($select, $storeId);
+
+        return array_map('intval', $this->getConnection()->fetchCol($select));
     }
 
     /**

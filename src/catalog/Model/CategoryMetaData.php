@@ -2,32 +2,31 @@
 
 namespace StreamX\ConnectorCatalog\Model;
 
-use Exception;
 use Magento\Catalog\Api\Data\CategoryInterface;
-use Magento\Framework\EntityManager\EntityMetadataInterface;
 use Magento\Framework\EntityManager\MetadataPool;
 
-class CategoryMetaData
-{
-    private ?EntityMetadataInterface $categoryMetaData = null;
-    private MetadataPool $metadataPool;
+class CategoryMetaData {
 
-    public function __construct(MetadataPool $metadataPool)
-    {
-        $this->metadataPool = $metadataPool;
+    private string $entityTable;
+    private string $entityIdField;
+    private string $linkField;
+
+    public function __construct(MetadataPool $metadataPool) {
+        $categoryMetaData = $metadataPool->getMetadata(CategoryInterface::class);
+        $this->entityTable = $categoryMetaData->getEntityTable();
+        $this->entityIdField = $categoryMetaData->getIdentifierField();
+        $this->linkField = $categoryMetaData->getLinkField();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function get(): EntityMetadataInterface
-    {
-        if (null === $this->categoryMetaData) {
-            $this->categoryMetaData = $this->metadataPool->getMetadata(
-                CategoryInterface::class
-            );
-        }
+    public function getEntityTable(): string {
+        return $this->entityTable;
+    }
 
-        return $this->categoryMetaData;
+    public function getEntityIdField(): string {
+        return $this->entityIdField;
+    }
+
+    public function getLinkField(): string {
+        return $this->linkField;
     }
 }

@@ -33,7 +33,7 @@ class ActiveCategorySelectModifier implements SelectModifierInterface
      */
     public function modify(Select $select, int $storeId): void
     {
-        $linkField = $this->categoryMetadata->get()->getLinkField();
+        $linkField = $this->categoryMetadata->getLinkField();
         $backendTable = $this->resourceConnection->getTableName($this->isActiveAttributeBackendTable);
 
         $select->joinLeft(

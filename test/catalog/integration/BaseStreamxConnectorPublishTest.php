@@ -13,6 +13,7 @@ use StreamX\ConnectorCatalog\test\integration\AppEntityUpdateStreamxPublishTests
 use StreamX\ConnectorCatalog\test\integration\DirectDbEntityUpdateStreamxPublishTests\BaseDirectDbEntityUpdateTest;
 use StreamX\ConnectorCatalog\test\integration\utils\ConfigurationEditTraits;
 use StreamX\ConnectorCatalog\test\integration\utils\MagentoIndexerOperationsExecutor;
+use StreamX\ConnectorCatalog\test\integration\utils\MagentoLogFileUtils;
 use StreamX\ConnectorCatalog\test\integration\utils\MagentoMySqlQueryExecutor;
 
 /**
@@ -42,6 +43,8 @@ abstract class BaseStreamxConnectorPublishTest extends BaseStreamxTest {
 
     protected static string $testedIndexerName;
     private static string $testedIndexerMode;
+
+    private MagentoLogFileUtils $logFileUtils;
 
     public static function setUpBeforeClass(): void {
         if (!self::$areTestsInitialized) {
@@ -143,5 +146,16 @@ abstract class BaseStreamxConnectorPublishTest extends BaseStreamxTest {
         }
 
         return $responseBody;
+    }
+
+    protected function setUp(): void {
+        echo "Starting {$this->getName()}\n";
+        $this->logFileUtils = new MagentoLogFileUtils();
+    }
+
+    protected function tearDown(): void {
+        $ingestedKeys = $this->logFileUtils->getPublishedAndUnpublishedKeys();
+        echo "Keys published during the test: {$ingestedKeys->getFormattedPublishedKeys()}\n";
+        echo "Keys unpublished during the test: {$ingestedKeys->getFormattedUnpublishedKeys()}\n";
     }
 }

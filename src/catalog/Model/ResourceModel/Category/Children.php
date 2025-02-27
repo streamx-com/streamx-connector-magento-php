@@ -52,7 +52,7 @@ class Children
         $bind = ['c_path' => $category['path'] . '/%'];
 
         $select = $this->getConnection()->select()->from(
-            ['entity' => $this->getEntityTable()],
+            ['entity' => $this->categoryMetaData->getEntityTable()],
             ['id' => 'entity_id']
         )->where(
             $connection->quoteIdentifier('path') . ' LIKE :c_path'
@@ -61,16 +61,6 @@ class Children
         $this->selectModifier->modifyAll($select, $storeId);
 
         return $this->getConnection()->fetchCol($select, $bind);
-    }
-
-    /**
-     * Retrieve category entity table
-     *
-     * @throws Exception
-     */
-    private function getEntityTable(): string
-    {
-        return $this->categoryMetaData->get()->getEntityTable();
     }
 
     private function getConnection(): AdapterInterface

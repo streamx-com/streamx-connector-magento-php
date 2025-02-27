@@ -7,7 +7,6 @@ use Magento\Eav\Model\Entity\Attribute;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Select;
-use Magento\Framework\EntityManager\EntityMetadataInterface;
 use Magento\Store\Model\Store;
 use StreamX\ConnectorCatalog\Model\ProductMetaData;
 use Zend_Db_Expr;
@@ -101,7 +100,7 @@ class ProductAttributesProvider
      */
     private function processValues(array $values): void
     {
-        $productIdField = $this->getProductMetaData()->getIdentifierField();
+        $productIdField = $this->productMetaData->getIdentifierField();
 
         foreach ($values as $value) {
             $attribute = $this->attributesById[$value['attribute_id']];
@@ -148,8 +147,8 @@ class ProductAttributesProvider
     private function getLoadAttributesSelect(int $storeId, string $table, array $attributeIds, array $productIds): Select
     {
         //  Either row_id (enterprise/commerce version) or entity_id.
-        $linkField = $this->getProductMetaData()->getLinkField();
-        $productIdField = $this->getProductMetaData()->getIdentifierField();
+        $linkField = $this->productMetaData->getLinkField();
+        $productIdField = $this->productMetaData->getIdentifierField();
 
         $joinStoreCondition = [
             "t_default.$linkField=t_store.$linkField",
@@ -169,7 +168,7 @@ class ProductAttributesProvider
         );
 
         return $this->getConnection()->select()
-            ->from(['entity' => $this->getProductMetaData()->getEntityTable()], [$productIdField])
+            ->from(['entity' => $this->productMetaData->getEntityTable()], [$productIdField])
             ->joinInner(
                 ['t_default' => $table],
                 new Zend_Db_Expr("entity.$linkField = t_default.$linkField"),
@@ -186,11 +185,6 @@ class ProductAttributesProvider
                 't_default.store_id = ?',
                 $this->getConnection()->getIfNullSql('t_store.store_id', Store::DEFAULT_STORE_ID)
             );
-    }
-
-    private function getProductMetaData(): EntityMetadataInterface
-    {
-        return $this->productMetaData->get();
     }
 
     private function getConnection(): AdapterInterface

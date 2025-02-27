@@ -30,7 +30,7 @@ class MediaGalleryData implements DataProviderInterface
     public function addData(array &$indexData, int $storeId): void
     {
         $this->mapRowIdToEntityId($indexData);
-        $linkField = $this->productMetaData->get()->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
         $linkFieldIds = array_column($indexData, $linkField);
 
         $gallerySet = $this->resourceModel->loadGallerySet($linkFieldIds, $storeId);
@@ -64,8 +64,8 @@ class MediaGalleryData implements DataProviderInterface
 
     private function mapRowIdToEntityId(array $products): void
     {
-        $linkField = $this->productMetaData->get()->getLinkField();
-        $identifierField = $this->productMetaData->get()->getIdentifierField();
+        $linkField = $this->productMetaData->getLinkField();
+        $identifierField = $this->productMetaData->getIdentifierField();
 
         if ($identifierField !== $linkField) {
             foreach ($products as $entityId => $product) {

@@ -43,7 +43,7 @@ class VisibleSelectModifier implements SelectModifierInterface
             return;
         }
 
-        $linkField = $this->productMetaData->get()->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
         $backendTable = $this->resourceConnection->getTableName($this->visibilityAttributeBackendTable);
 
         $select->joinLeft(

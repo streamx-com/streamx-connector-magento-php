@@ -31,7 +31,7 @@ class CustomOptions implements DataProviderInterface
      */
     public function addData(array &$indexData, int $storeId): void
     {
-        $linkField = $this->productMetaData->get()->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
         $linkFieldIds = array_column($indexData, $linkField);
 
         $options = $this->optionsResourceModel->loadProductOptions($linkFieldIds, $storeId);

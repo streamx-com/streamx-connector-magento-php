@@ -1,37 +1,15 @@
 {
-  "sku": "24-WG081-gray",
-  "id": 24,
+  "sku": "24-UG07",
+  "id": 16,
   "lang": "en",
   "attributes": [
-    {
-      "name": "small_image",
-      "label": "Small",
-      "values": [
-        {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg"
-        }
-      ],
-      "isFacet": false
-    },
-    {
-      "name": "thumbnail",
-      "label": "Thumbnail",
-      "values": [
-        {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg"
-        }
-      ],
-      "isFacet": false
-    },
     {
       "name": "url_key",
       "label": "URL Key",
       "values": [
         {
-          "value": "sprite-stasis-ball-55-cm-gray",
-          "label": "sprite-stasis-ball-55-cm-gray"
+          "value": "dual-handle-cardio-ball",
+          "label": "dual-handle-cardio-ball"
         }
       ],
       "isFacet": false
@@ -48,81 +26,29 @@
       "isFacet": true
     },
     {
-      "name": "category_gear",
-      "label": "Category Gear",
+      "name": "sale",
+      "label": "Sale",
       "values": [
         {
-          "value": "Exercise",
-          "label": "Exercise"
-        }
-      ],
-      "isFacet": true
-    },
-    {
-      "name": "color",
-      "label": "Color",
-      "values": [
-        {
-          "value": "Gray",
-          "label": "Gray",
-          "swatch": {
-            "type": "color",
-            "value": "#8f8f8f"
-          }
-        }
-      ],
-      "isFacet": true
-    },
-    {
-      "name": "status",
-      "label": "Enable Product",
-      "values": [
-        {
-          "value": "Enabled",
-          "label": "Enabled"
-        }
-      ],
-      "isFacet": false
-    },
-    {
-      "name": "visibility",
-      "label": "Visibility",
-      "values": [
-        {
-          "value": "Not Visible Individually",
-          "label": "Not Visible Individually"
-        }
-      ],
-      "isFacet": false
-    },
-    {
-      "name": "size",
-      "label": "Size",
-      "values": [
-        {
-          "value": "55 cm",
-          "label": "55 cm",
-          "swatch": {
-            "type": "textual",
-            "value": "55 cm"
-          }
+          "value": "Yes",
+          "label": "Yes"
         }
       ],
       "isFacet": true
     }
   ],
-  "name": "Sprite Stasis Ball 55 cm",
-  "label": "Sprite Stasis Ball 55 cm",
+  "name": "Dual Handle Cardio Ball",
+  "label": "Dual Handle Cardio Ball",
   "primaryImage": {
-    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg",
+    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
     "alt": "Image"
   },
-  "description": "<p>The Sprite Stasis Ball gives you the toned abs, sides, and back you want by amping up your core workout. With bright colors and a burst-resistant design, it's a must-have for every hard-core exercise addict. Use for abdominal conditioning, balance training, yoga, or even physical therapy.<\/p>\n<ul>\n<li>Durable, burst-resistant design.<\/li>\n<li>Hand pump included.<\/li>\n<\/ul>",
+  "description": "<p>Make the most of your limited workout window with our Dual-Handle Cardio Ball. The 15-lb ball maximizes the effort-impact to your abdominal, upper arm and lower-body muscles. It features a handle on each side for a firm, secure grip.<\/p>\n<ul>\n<li>Durable plastic shell with sand fill.\n<li>Two handles.\n<li>15 lbs.\n<\/ul>",
   "price": {
-    "value": 23,
-    "discountedValue": 23
+    "value": 12,
+    "discountedValue": 12
   },
-  "slug": "sprite-stasis-ball-55-cm-24",
+  "slug": "dual-handle-cardio-ball-16",
   "categories": [
     {
       "id": 3,
@@ -193,7 +119,11 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-stability-ball-gray.jpg",
+      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
+      "alt": "Image"
+    },
+    {
+      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0_alt1.jpg",
       "alt": "Image"
     }
   ],

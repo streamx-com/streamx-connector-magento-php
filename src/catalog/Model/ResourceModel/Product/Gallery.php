@@ -55,7 +55,7 @@ class Gallery
      */
     private function getLoadGallerySelect(array $linkFieldIds, int $storeId): Select
     {
-        $linkField = $this->metadataPool->get()->getLinkField();
+        $linkField = $this->metadataPool->getLinkField();
         $attributeId = $this->getMediaGalleryAttributeId();
         $connection = $this->getConnection();
 

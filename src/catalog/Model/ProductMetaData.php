@@ -3,27 +3,36 @@
 namespace StreamX\ConnectorCatalog\Model;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Framework\EntityManager\EntityMetadataInterface;
 use Magento\Framework\EntityManager\MetadataPool;
 
-class ProductMetaData
-{
-    private ?EntityMetadataInterface $productMetaData = null;
-    private MetadataPool $metadataPool;
+class ProductMetaData {
 
-    public function __construct(MetadataPool $metadataPool)
-    {
-        $this->metadataPool = $metadataPool;
+    private string $entityTable;
+    private string $identifierField;
+    private string $linkField;
+    private string $eavEntityType;
+
+    public function __construct(MetadataPool $metadataPool) {
+        $productMetaData = $metadataPool->getMetadata(ProductInterface::class);
+        $this->entityTable = $productMetaData->getEntityTable();
+        $this->identifierField = $productMetaData->getIdentifierField();
+        $this->linkField = $productMetaData->getLinkField();
+        $this->eavEntityType = $productMetaData->getEavEntityType();
     }
 
-    public function get(): EntityMetadataInterface
-    {
-        if (null === $this->productMetaData) {
-            $this->productMetaData = $this->metadataPool->getMetadata(
-                ProductInterface::class
-            );
-        }
+    public function getEntityTable(): string {
+        return $this->entityTable;
+    }
 
-        return $this->productMetaData;
+    public function getIdentifierField(): string {
+        return $this->identifierField;
+    }
+
+    public function getLinkField(): string {
+        return $this->linkField;
+    }
+
+    public function getEavEntityType(): string {
+        return $this->eavEntityType;
     }
 }

@@ -45,7 +45,7 @@ class Prices
      */
     public function loadPriceDataFromPriceIndex(int $storeId, array $productIds): array
     {
-        $entityIdField = $this->productMetaData->get()->getIdentifierField();
+        $entityIdField = $this->productMetaData->getIdentifierField();
         $websiteId = (int)$this->getStore($storeId)->getWebsiteId();
 
         // Only default customer Group ID (0) is supported now

@@ -22,7 +22,7 @@ class ProductConfig
     public function getEntityTypeId(): int
     {
         if (null === $this->entityTypeId) {
-            $entityTypeCode = $this->productMetaData->get()->getEavEntityType();
+            $entityTypeCode = $this->productMetaData->getEavEntityType();
 
             $connection = $this->resource->getConnection();
             $select = $connection->select()->from(

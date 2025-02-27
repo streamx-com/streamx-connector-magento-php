@@ -34,7 +34,7 @@ class StatusEnabledSelectModifier implements SelectModifierInterface
      */
     public function modify(Select $select, int $storeId): void
     {
-        $linkField = $this->productMetaData->get()->getLinkField();
+        $linkField = $this->productMetaData->getLinkField();
         $backendTable = $this->resourceConnection->getTableName($this->statusAttributeBackendTable);
 
         $select->joinLeft(
