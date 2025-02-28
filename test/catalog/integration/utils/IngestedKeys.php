@@ -15,30 +15,29 @@ class IngestedKeys {
         array_push($this->unpublishedKeys, ...$keys);
     }
 
-    public function getFormattedPublishedKeys(): string {
-        return self::getFormattedKeys($this->publishedKeys);
-    }
-
-    public function getFormattedUnpublishedKeys(): string {
-        return self::getFormattedKeys($this->unpublishedKeys);
-    }
-
-    private static function getFormattedKeys(array $keys) : string {
-        if (empty($keys)) {
-            return '-';
+    public function formatted(): string {
+        $resultLines = [];
+        if (!empty($this->publishedKeys)) {
+            array_push($resultLines, ...self::getFormattedKeys($this->publishedKeys, ' + '));
         }
+        if (!empty($this->unpublishedKeys)) {
+            array_push($resultLines, ...self::getFormattedKeys($this->unpublishedKeys, ' - '));
+        }
+        return implode("\n", $resultLines);
+    }
 
-        $idsByPrefix = self::toIdsByPrefixMap(array_unique($keys));
+    private static function getFormattedKeys(array $keys, string $linePrefix) : array {
+        $idsByPrefix = self::toIdsByKeyPrefixMap(array_unique($keys));
 
-        $result = '';
-        foreach ($idsByPrefix as $prefix => $ids) {
+        $resultLines = [];
+        foreach ($idsByPrefix as $keyPrefix => $ids) {
             sort($ids);
-            $result .= ("\n - $prefix: " . implode(', ', $ids));
+            $resultLines[] =  "$linePrefix$keyPrefix: " . implode(', ', $ids);
         }
-        return $result;
+        return $resultLines;
     }
 
-    private static function toIdsByPrefixMap(array $keys): array {
+    private static function toIdsByKeyPrefixMap(array $keys): array {
         $idsByPrefix = [];
         foreach ($keys as $key) {
             $parts = explode(':', str_replace('"', '', $key));

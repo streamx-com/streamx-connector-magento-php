@@ -34,4 +34,9 @@ class CurrentWebsiteSelectModifier implements SelectModifierInterface
             []
         );
     }
+
+    public function modifyNegate(Select $select, int $storeId): void
+    {
+        // TODO: Implement modifyNegate() method.
+    }
 }

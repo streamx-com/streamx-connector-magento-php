@@ -155,7 +155,7 @@ abstract class BaseStreamxConnectorPublishTest extends BaseStreamxTest {
 
     protected function tearDown(): void {
         $ingestedKeys = $this->logFileUtils->getPublishedAndUnpublishedKeys();
-        echo "Keys published during the test: {$ingestedKeys->getFormattedPublishedKeys()}\n";
-        echo "Keys unpublished during the test: {$ingestedKeys->getFormattedUnpublishedKeys()}\n";
+        echo 'Keys ingested during the test:' . PHP_EOL;
+        echo $ingestedKeys->formatted() . PHP_EOL;
     }
 }

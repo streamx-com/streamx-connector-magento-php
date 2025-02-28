@@ -7,23 +7,21 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use StreamX\ConnectorCatalog\Model\CategoryMetaData;
 use Magento\Framework\App\ResourceConnection;
 use StreamX\ConnectorCatalog\Model\ResourceModel\Category;
-use StreamX\ConnectorCatalog\Model\ResourceModel\CompositeSelectModifier;
 
 class Children
 {
     private ResourceConnection $resource;
-    private CompositeSelectModifier $selectModifier;
+    private EligibleCategorySelectModifier $eligibleCategorySelectModifier;
     private CategoryMetaData $categoryMetaData;
 
     public function __construct(
-        CategoryFromStoreSelectModifier $categoryFromStoreSelectModifier,
-        ActiveCategorySelectModifier $activeCategorySelectModifier,
+        EligibleCategorySelectModifier $eligibleCategorySelectModifier,
         ResourceConnection $resourceModel,
         CategoryMetaData $categoryMetaData
     ) {
         $this->resource = $resourceModel;
         $this->categoryMetaData = $categoryMetaData;
-        $this->selectModifier = new CompositeSelectModifier($categoryFromStoreSelectModifier, $activeCategorySelectModifier);
+        $this->eligibleCategorySelectModifier = $eligibleCategorySelectModifier;
     }
 
     /**
@@ -33,7 +31,7 @@ class Children
     {
         $childIds = $this->getChildrenIds($category, $storeId);
         $select = Category::getCategoriesBaseSelect($this->resource, $this->categoryMetaData);
-        $this->selectModifier->modifyAll($select, $storeId);
+        $this->eligibleCategorySelectModifier->modify($select, $storeId);
 
         $select->where("entity.entity_id IN (?)", $childIds);
         $select->order('path asc');
@@ -58,7 +56,7 @@ class Children
             $connection->quoteIdentifier('path') . ' LIKE :c_path'
         );
 
-        $this->selectModifier->modifyAll($select, $storeId);
+        $this->eligibleCategorySelectModifier->modify($select, $storeId);
 
         return $this->getConnection()->fetchCol($select, $bind);
     }

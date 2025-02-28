@@ -63,4 +63,9 @@ class StatusEnabledSelectModifier implements SelectModifierInterface
 
         throw new DomainException("Cannot load status attribute");
     }
+
+    public function modifyNegate(Select $select, int $storeId): void
+    {
+        // TODO: Implement modifyNegate() method.
+    }
 }
