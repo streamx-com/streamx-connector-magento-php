@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=7.4",
-    "streamx/ingestion-client": "1.0.4",
+    "streamx/ingestion-client": "1.0.6",
     "magento/framework": ">=101.0.0",
     "magento/module-store": ">=100.2.0",
     "magento/module-backend": ">=100.2.0",
