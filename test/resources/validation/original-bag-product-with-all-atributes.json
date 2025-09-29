@@ -1,0 +1,207 @@
+{
+  "sku": "24-MB01",
+  "id": "1",
+  "lang": "en",
+  "attributes": [
+    {
+      "name": "small_image",
+      "label": "Small",
+      "values": [
+        {
+          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg",
+          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "thumbnail",
+      "label": "Thumbnail",
+      "values": [
+        {
+          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg",
+          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "image_label",
+      "label": "Image Label",
+      "values": [
+        {
+          "value": "Image",
+          "label": "Image"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "small_image_label",
+      "label": "Small Image Label",
+      "values": [
+        {
+          "value": "Image",
+          "label": "Image"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "thumbnail_label",
+      "label": "Thumbnail Label",
+      "values": [
+        {
+          "value": "Image",
+          "label": "Image"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "url_key",
+      "label": "URL Key",
+      "values": [
+        {
+          "value": "joust-duffle-bag",
+          "label": "joust-duffle-bag"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "msrp_display_actual_price_type",
+      "label": "Display Actual Price",
+      "values": [
+        {
+          "value": "Use config",
+          "label": "Use config"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "swatch_image",
+      "label": "Swatch",
+      "values": [
+        {
+          "value": "no_selection",
+          "label": "no_selection"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "color",
+      "label": "Color",
+      "values": [
+        {
+          "value": "Black",
+          "label": "Black",
+          "swatch": {
+            "type": "color",
+            "value": "#000000"
+          }
+        }
+      ],
+      "isFacet": true
+    },
+    {
+      "name": "status",
+      "label": "Enable Product",
+      "values": [
+        {
+          "value": "Enabled",
+          "label": "Enabled"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "visibility",
+      "label": "Visibility",
+      "values": [
+        {
+          "value": "Catalog, Search",
+          "label": "Catalog, Search"
+        }
+      ],
+      "isFacet": false
+    },
+    {
+      "name": "tax_class_id",
+      "label": "Tax Class",
+      "values": [
+        {
+          "value": "Taxable Goods",
+          "label": "Taxable Goods"
+        }
+      ],
+      "isFacet": false
+    }
+  ],
+  "name": "Joust Duffle Bag",
+  "label": "Joust Duffle Bag",
+  "primaryImage": {
+    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg",
+    "alt": "Image"
+  },
+  "description": "<p>The sporty Joust Duffle Bag can't be beat - not in the gym, not on the luggage carousel, not anywhere. Big enough to haul a basketball or soccer ball and some sneakers with plenty of room to spare, it's ideal for athletes with places to go.<p>\n<ul>\n<li>Dual top handles.<\/li>\n<li>Adjustable shoulder strap.<\/li>\n<li>Full-length zipper.<\/li>\n<li>L 29\" x W 13\" x H 11\".<\/li>\n<\/ul>",
+  "price": {
+    "value": 34,
+    "discountedValue": 34
+  },
+  "slug": "joust-duffle-bag-1",
+  "categories": [
+    {
+      "id": "3",
+      "name": "Gear",
+      "slug": "gear-3",
+      "label": "Gear",
+      "parent": {
+        "id": "2",
+        "name": "Default Category",
+        "slug": "default-category-2",
+        "label": "Default Category",
+        "parent": {
+          "id": "1",
+          "name": "Root Catalog",
+          "slug": "root-catalog-1",
+          "label": "Root Catalog"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Bags",
+      "slug": "bags-4",
+      "label": "Bags",
+      "parent": {
+        "id": "3",
+        "name": "Gear",
+        "slug": "gear-3",
+        "label": "Gear",
+        "parent": {
+          "id": "2",
+          "name": "Default Category",
+          "slug": "default-category-2",
+          "label": "Default Category",
+          "parent": {
+            "id": "1",
+            "name": "Root Catalog",
+            "slug": "root-catalog-1",
+            "label": "Root Catalog"
+          }
+        }
+      }
+    }
+  ],
+  "gallery": [
+    {
+      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb01-blue-0.jpg",
+      "alt": "Image"
+    }
+  ],
+  "quantity": 100.0,
+  "variants": []
+}

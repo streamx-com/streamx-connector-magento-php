@@ -42,7 +42,6 @@ class AttributeUpdateTest extends BaseDirectDbEntityUpdateTest {
 
         // when
         ConfigurationEditUtils::setIndexedProductAttributes('sale', 'material');
-
         $this->renameAttributeInDb($attributeId, $newDisplayName);
 
         try {
@@ -51,6 +50,35 @@ class AttributeUpdateTest extends BaseDirectDbEntityUpdateTest {
 
             // then
             $this->assertExactDataIsPublished($expectedKey, $validationFile);
+        } finally {
+            $this->renameAttributeInDb($attributeId, $oldDisplayName);
+            ConfigurationEditUtils::restoreDefaultIndexedProductAttributes();
+        }
+    }
+
+    /** @test */
+    public function shouldPublishProductWithAllAttributes_WhenOneIsEdited_AndEmptyListOfIndexedAttributesIsConfigured(): void {
+        // given: prepare any attribute to be renamed, to enable triggering the indexer
+        $attributeCode = 'description';
+        $attributeId = self::$db->getProductAttributeId($attributeCode);
+        $oldDisplayName = self::$db->getAttributeDisplayName($attributeId);
+        $newDisplayName = "Name modified for testing, was $oldDisplayName";
+
+        // and
+        $productId = self::$db->getProductId('Joust Duffle Bag');
+        $expectedKey = self::productKey($productId);
+        self::removeFromStreamX($expectedKey);
+
+        // when
+        ConfigurationEditUtils::allowIndexingAllProductAttributes();
+        $this->renameAttributeInDb($attributeId, $newDisplayName);
+
+        try {
+            // and
+            $this->reindexMview();
+
+            // then
+            $this->assertExactDataIsPublished($expectedKey, 'original-bag-product-with-all-atributes.json');
         } finally {
             $this->renameAttributeInDb($attributeId, $oldDisplayName);
             ConfigurationEditUtils::restoreDefaultIndexedProductAttributes();

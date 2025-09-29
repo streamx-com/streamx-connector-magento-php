@@ -26,8 +26,8 @@ class IndexableAttributesFilter {
      * @param AttributeDefinition[] $attributes
      * @return int[] attribute IDs
      */
-    public function filterProductAttributes(array $attributes, int $storeId): array {
-        return $this->filterIndexableAttributes(
+    public function filterIdsOfIndexableProductAttributes(array $attributes, int $storeId): array {
+        return $this->filterIdsOfIndexableAttributes(
             $attributes,
             $this->productAttributes->getAttributesToIndex($storeId)
         );
@@ -40,8 +40,8 @@ class IndexableAttributesFilter {
      * @param AttributeDefinition[] $attributes
      * @return int[] attribute IDs
      */
-    public function filterChildProductAttributes(array $attributes, int $storeId): array {
-        return $this->filterIndexableAttributes(
+    public function filterIdsOfIndexableChildProductAttributes(array $attributes, int $storeId): array {
+        return $this->filterIdsOfIndexableAttributes(
             $attributes,
             $this->childProductAttributes->getAttributesToIndex($storeId)
         );
@@ -49,18 +49,18 @@ class IndexableAttributesFilter {
 
     /**
      * @param AttributeDefinition[] $attributes
-     * @param string[] $attributesToIndex
+     * @param string[] $attributeCodesToIndex
      * @return int[] attribute IDs
      */
-    private function filterIndexableAttributes(array $attributes, array $attributesToIndex): array {
-        if (empty($attributesToIndex)) {
-            // empty list of attributes to index always means: index all attributes.
-            return $attributes;
+    private function filterIdsOfIndexableAttributes(array $attributes, array $attributeCodesToIndex): array {
+        // empty list of attributes to index always means: index all attributes.
+        if (empty($attributeCodesToIndex)) {
+            return array_map(fn($attribute) => $attribute->getId(), $attributes);
         }
 
         $result = [];
         foreach ($attributes as $attribute) {
-            if (in_array($attribute->getCode(), $attributesToIndex)) {
+            if (in_array($attribute->getCode(), $attributeCodesToIndex)) {
                 $result[] = $attribute->getId();
             }
         }

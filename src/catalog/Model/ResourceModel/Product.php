@@ -152,12 +152,22 @@ class Product
         $select->where('entity.type_id IN (?)', $types);
     }
 
-    public function loadIdsOfProductsThatUseAttributes(array $attributeIds, int $storeId, array $productAttributeTables = self::PRODUCT_ATTRIBUTE_TABLES): array {
-        return $this->internalLoadIdsOfProductsThatUseAttributes($attributeIds, $storeId, false, $productAttributeTables);
+    /**
+     * @param int[] $attributeIds
+     * @param int $storeId
+     * @return int[]
+     */
+    public function loadIdsOfProductsThatUseAttributes(array $attributeIds, int $storeId): array {
+        return $this->internalLoadIdsOfProductsThatUseAttributes($attributeIds, $storeId, false);
     }
 
-    public function loadIdsOfChildProductsThatUseAttributes(array $attributeIds, int $storeId, array $productAttributeTables = self::PRODUCT_ATTRIBUTE_TABLES): array {
-        return $this->internalLoadIdsOfProductsThatUseAttributes($attributeIds, $storeId, true, $productAttributeTables);
+    /**
+     * @param array $attributeIds
+     * @param int $storeId
+     * @return int[]
+     */
+    public function loadIdsOfChildProductsThatUseAttributes(array $attributeIds, int $storeId): array {
+        return $this->internalLoadIdsOfProductsThatUseAttributes($attributeIds, $storeId, true);
     }
 
     /**
