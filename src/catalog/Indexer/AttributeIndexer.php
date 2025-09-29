@@ -51,12 +51,12 @@ class AttributeIndexer extends BaseStreamxIndexer {
         }
 
         $storeId = (int) $store->getId();
-        $indexableProductAttributes = $this->indexableAttributesFilter->filterProductAttributes($addedOrEditedAttributes, $storeId);
-        $indexableChildProductAttributes = $this->indexableAttributesFilter->filterChildProductAttributes($addedOrEditedAttributes, $storeId);
+        $indexableProductAttributeIds = $this->indexableAttributesFilter->filterIdsOfIndexableProductAttributes($addedOrEditedAttributes, $storeId);
+        $indexableChildProductAttributeIds = $this->indexableAttributesFilter->filterIdsOfIndexableChildProductAttributes($addedOrEditedAttributes, $storeId);
 
         $productIds = [];
-        array_push($productIds, ...$this->productModel->loadIdsOfProductsThatUseAttributes($indexableProductAttributes, $storeId));
-        array_push($productIds, ...$this->productModel->loadIdsOfChildProductsThatUseAttributes($indexableChildProductAttributes, $storeId));
+        array_push($productIds, ...$this->productModel->loadIdsOfProductsThatUseAttributes($indexableProductAttributeIds, $storeId));
+        array_push($productIds, ...$this->productModel->loadIdsOfChildProductsThatUseAttributes($indexableChildProductAttributeIds, $storeId));
 
         if (!empty($productIds)) {
             // TODO to be considered: check if only relevant attribute properties have changed to trigger publishing products (only changes in code, label, isFacet and options should matter)
