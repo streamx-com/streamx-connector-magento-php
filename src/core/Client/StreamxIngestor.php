@@ -2,21 +2,27 @@
 
 namespace StreamX\ConnectorCore\Client;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
+use Streamx\Clients\Ingestion\Builders\StreamxClientBuilders;
 use Streamx\Clients\Ingestion\Exceptions\StreamxClientException;
-use Streamx\Clients\Ingestion\Impl\MessageStatus;
+use Streamx\Clients\Ingestion\Publisher\MessageStatus;
 use Streamx\Clients\Ingestion\Publisher\Message;
+use Streamx\Clients\Ingestion\Publisher\Publisher;
 use StreamX\ConnectorCore\Traits\ExceptionLogger;
 
 class StreamxIngestor {
     use ExceptionLogger;
 
     private LoggerInterface $logger;
-    private StreamxPublisherFactory $streamxPublisherFactory;
+    private StreamxClientConfiguration $configuration;
+    private Client $httpClient;
 
-    public function __construct(LoggerInterface $logger, StreamxPublisherFactory $streamxPublisherFactory) {
+    public function __construct(LoggerInterface $logger, StreamxClientConfiguration $configuration) {
         $this->logger = $logger;
-        $this->streamxPublisherFactory = $streamxPublisherFactory;
+        $this->configuration = $configuration;
+        $this->httpClient = new Client();
     }
 
     /**
@@ -28,15 +34,35 @@ class StreamxIngestor {
         $keys = array_column($ingestionMessages, 'key');
         $action = implode(', ', array_unique(array_column($ingestionMessages, 'action')));
 
-        $streamxPublisher = $this->streamxPublisherFactory->createStreamxPublisher($storeId);
-        $baseUrl = $streamxPublisher->getBaseUrl();
+        $baseUrl = $this->configuration->getIngestionBaseUrl($storeId);
+        $streamxPublisher = $this->createStreamxPublisher($baseUrl, $storeId);
         $this->logger->info("Ingesting data with action $action to store $storeId at $baseUrl with keys " . json_encode($keys));
 
-        $messageStatuses = $streamxPublisher->getPublisher()->sendMulti($ingestionMessages);
+        $messageStatuses = $streamxPublisher->sendMulti($ingestionMessages, [
+            RequestOptions::STREAM => true,
+            RequestOptions::CONNECT_TIMEOUT => $this->configuration->getConnectionTimeout($storeId),
+            RequestOptions::TIMEOUT => $this->configuration->getResponseTimeout($storeId),
+            RequestOptions::VERIFY => !$this->configuration->shouldDisableCertificateValidation($storeId),
+        ]);
 
         $success = $this->isEachStatusSuccess($ingestionMessages, $messageStatuses);
         $this->logger->info('Finished ingesting data with ' . ($success ? 'success' : 'failure'));
         return $success;
+    }
+
+    private function createStreamxPublisher(string $baseUrl, int $storeId): Publisher {
+        $ingestionClientBuilder = StreamxClientBuilders::create($baseUrl)
+            ->setHttpClient($this->httpClient);
+
+        $authToken = $this->configuration->getAuthToken($storeId);
+        if ($authToken) {
+            $ingestionClientBuilder->setAuthToken($authToken);
+        }
+
+        return $ingestionClientBuilder->build()->newPublisher(
+            $this->configuration->getChannelName($storeId),
+            $this->configuration->getChannelSchemaName($storeId)
+        );
     }
 
     /**

@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 use Streamx\Clients\Ingestion\Builders\StreamxClientBuilders;
 use StreamX\ConnectorCatalog\test\integration\utils\CodeCoverageReportGenerator;
 use StreamX\ConnectorCatalog\test\integration\utils\JsonFormatter;
-use StreamX\ConnectorCatalog\test\integration\utils\MagentoLogFileUtils;
 use StreamX\ConnectorCatalog\test\integration\utils\ValidationFileUtils;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqConfiguration;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqConnectionSettings;
@@ -16,7 +15,6 @@ use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqIngestionRequestsSender;
 use StreamX\ConnectorCore\Client\StreamxClient;
 use StreamX\ConnectorCore\Client\StreamxClientConfiguration;
 use StreamX\ConnectorCore\Client\StreamxIngestor;
-use StreamX\ConnectorCore\Client\StreamxPublisherFactory;
 
 /**
  * Prerequisites to run these tests:
@@ -128,8 +126,7 @@ abstract class BaseStreamxTest extends TestCase {
         $rabbitMqSender = new RabbitMqIngestionRequestsSender($loggerMock, $rabbitMqConfigurationMock);
 
         $clientConfigurationMock = $this->createClientConfigurationMock(self::STREAMX_REST_INGESTION_URL);
-        $streamxPublisherFactory = new StreamxPublisherFactory($clientConfigurationMock);
-        $streamxIngestor = new StreamxIngestor($loggerMock, $streamxPublisherFactory);
+        $streamxIngestor = new StreamxIngestor($loggerMock, $clientConfigurationMock);
 
         return new StreamxClient($loggerMock, $rabbitMqConfigurationMock, $rabbitMqSender, $streamxIngestor);
     }
