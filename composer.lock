@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ad28743ee909189e1d75c75d026f54c",
+    "content-hash": "95b2edb6a49a54e71f0aeab2e8aaaeb9",
     "packages": [
         {
             "name": "brick/math",
@@ -6211,16 +6211,16 @@
         },
         {
             "name": "streamx/ingestion-client",
-            "version": "1.0.4",
+            "version": "1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/streamx-dev/streamx-ingestion-php.git",
-                "reference": "1e65326e29cef0fc649e3207c019f0c72efba578"
+                "reference": "479754fca95809bf376ccf375428218790476f70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/streamx-dev/streamx-ingestion-php/zipball/1e65326e29cef0fc649e3207c019f0c72efba578",
-                "reference": "1e65326e29cef0fc649e3207c019f0c72efba578",
+                "url": "https://api.github.com/repos/streamx-dev/streamx-ingestion-php/zipball/479754fca95809bf376ccf375428218790476f70",
+                "reference": "479754fca95809bf376ccf375428218790476f70",
                 "shasum": ""
             },
             "require": {
@@ -6229,6 +6229,7 @@
             },
             "require-dev": {
                 "donatj/mock-webserver": "^2.7",
+                "ext-curl": "*",
                 "ext-mbstring": "*",
                 "ext-xdebug": "*",
                 "nyholm/psr7": "^1.8",
@@ -6247,9 +6248,9 @@
             "description": "PHP ingestion client for StreamX - a Digital Experience Data Mesh.",
             "support": {
                 "issues": "https://github.com/streamx-dev/streamx-ingestion-php/issues",
-                "source": "https://github.com/streamx-dev/streamx-ingestion-php/tree/1.0.4"
+                "source": "https://github.com/streamx-dev/streamx-ingestion-php/tree/1.0.8"
             },
-            "time": "2025-02-19T11:18:30+00:00"
+            "time": "2025-10-14T06:56:11+00:00"
         },
         {
             "name": "symfony/cache",
@@ -10667,7 +10668,8 @@
     },
     "platform-dev": {
         "ext-mysqli": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-curl": "*"
     },
     "plugin-api-version": "2.6.0"
 }
