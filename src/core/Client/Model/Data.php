@@ -3,9 +3,11 @@
 namespace StreamX\ConnectorCore\Client\Model;
 
 class Data {
-    public Content $content;
+    public ?string $content;
+    public string $type;
 
-    public function __construct(string $content) {
-        $this->content = new Content($content);
+    public function __construct(?string $content, string $type) {
+        $this->content = $content ? base64_encode($content) : null;
+        $this->type = $type;
     }
 }
