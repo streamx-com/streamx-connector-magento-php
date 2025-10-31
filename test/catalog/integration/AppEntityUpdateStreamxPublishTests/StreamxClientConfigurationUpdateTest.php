@@ -37,8 +37,8 @@ class StreamxClientConfigurationUpdateTest extends BaseAppEntityUpdateTest {
             // then: expect the product data to be sent to the edited (unreachable) StreamX host...
             sleep(1);
             $this->logFileUtils->verifyLogged(
-                'Ingestion POST request with URI: http://localhost:9999/ingestion/v1/channels/data/messages failed due to HTTP client error',
-                'Retrying the message by republishing with routing key ingestion-requests-retry-1'
+                'ERROR: Error response from StreamX to the message: {"isBatch":false,"storeId":1,"cloudEvents":{"specversion":"1.0","id":',
+                'WARNING: Retrying the message by republishing with routing key ingestion-requests-retry-1'
             );
 
             // ...and remain unchanged in the original destination

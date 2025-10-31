@@ -101,7 +101,7 @@ class RabbitMqIngestionRequestsConsumer {
      */
     private function sendToStreamX(IngestionRequest $ingestionRequest): bool {
         return $this->streamxIngestor->send(
-            $ingestionRequest->getIngestionMessages(),
+            $ingestionRequest->getCloudEvents(),
             $ingestionRequest->getStoreId()
         );
     }

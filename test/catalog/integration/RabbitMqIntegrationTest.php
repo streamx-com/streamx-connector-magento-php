@@ -7,9 +7,9 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\AssertionFailedError;
 use RuntimeException;
-use Streamx\Clients\Ingestion\Publisher\Message;
 use StreamX\ConnectorCatalog\Indexer\ProductIndexer;
 use StreamX\ConnectorCatalog\test\integration\AppEntityUpdateStreamxPublishTests\BaseAppEntityUpdateTest;
+use StreamX\ConnectorCore\Client\Model\CloudEventUtils;
 use StreamX\ConnectorCore\Client\Model\Data;
 use StreamX\ConnectorCore\Client\RabbitMQ\IngestionRequest;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqIngestionRequestsSender;
@@ -46,15 +46,20 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
     }
 
     /** @test */
-    public function validIngestionMessage_ShouldBeProcessed() {
+    public function validIngestionEvent_ShouldBeProcessed() {
         // given
         $productJson = self::readValidationFileContent('original-bag-product.json');
-        $validIngestionMessage = Message::newPublishMessage(self::ingestionKey, new Data($productJson))->build();
+        $validIngestionEvent = CloudEventUtils::createEvent(
+            self::ingestionKey,
+            self::PUBLISHING_EVENT_TYPE,
+            self::EVENT_SOURCE,
+            new Data($productJson, "product/bag")
+        );
         $messagesCountBefore = self::getCurrentMessagesCount(RabbitMqQueuesManager::MAIN_QUEUE);
         $dlqMessagesCountBefore = self::getCurrentMessagesCount(RabbitMqQueuesManager::DEAD_LETTER_QUEUE);
 
         // when
-        $this->rabbitMqSender->send(new IngestionRequest([$validIngestionMessage], parent::$store1Id));
+        $this->rabbitMqSender->send(new IngestionRequest([$validIngestionEvent], parent::$store1Id));
 
         // then
         parent::assertExactDataIsPublished(self::ingestionKey, 'original-bag-product.json');
@@ -65,7 +70,7 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
     }
 
     /** @test */
-    public function recoverableIngestionMessage_ShouldBeRetried() {
+    public function recoverableIngestionEvent_ShouldBeRetried() {
         // this is a long-running test, so execute it on demand only
         if (getenv('EXECUTE_LONG_RUNNING_TESTS') !== 'true') {
             $this->markTestSkipped('EXECUTE_LONG_RUNNING_TESTS env var is not true, skipping test');
@@ -73,7 +78,12 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
 
         // given
         $productJson = self::readValidationFileContent('original-bag-product.json');
-        $validIngestionMessage = Message::newPublishMessage(self::ingestionKey, new Data($productJson))->build();
+        $validIngestionEvent = CloudEventUtils::createEvent(
+            self::ingestionKey,
+            self::PUBLISHING_EVENT_TYPE,
+            self::EVENT_SOURCE,
+            new Data($productJson, "product/bag")
+        );
 
         $messagesCountBefore = self::getCurrentMessagesCount(RabbitMqQueuesManager::MAIN_QUEUE);
         $dlqMessagesCountBefore = self::getCurrentMessagesCount(RabbitMqQueuesManager::DEAD_LETTER_QUEUE);
@@ -89,7 +99,7 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
         try {
             // when
             shell_exec('docker pause rest-ingestion');
-            $this->rabbitMqSender->send(new IngestionRequest([$validIngestionMessage], parent::$store1Id));
+            $this->rabbitMqSender->send(new IngestionRequest([$validIngestionEvent], parent::$store1Id));
 
             // then: the message should go through consecutive retry queues...
             $timeoutSeconds = 25;
@@ -114,7 +124,7 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
     }
 
     /** @test */
-    public function invalidIngestionMessage_ShouldBeImmediatelyRedirectedToDeadLetterQueue() {
+    public function invalidIngestionEvent_ShouldBeImmediatelyRedirectedToDeadLetterQueue() {
         // given
         $rabbitMqMessage = new AMQPMessage('This is not an Ingestion Request JSON');
         $messagesCountBefore = self::getCurrentMessagesCount(RabbitMqQueuesManager::MAIN_QUEUE);

@@ -2,23 +2,29 @@
 
 namespace StreamX\ConnectorCore\Client\RabbitMQ;
 
-use Streamx\Clients\Ingestion\Publisher\Message;
-use StreamX\ConnectorCore\Client\Model\Data;
+use CloudEvents\V1\CloudEventInterface;
+use StreamX\ConnectorCore\Client\Model\CloudEventsSerializer;
 
 class IngestionRequest {
 
-    /** @var Message[] */
-    private array $ingestionMessages;
+    /** @var CloudEventInterface[] */
+    private array $cloudEvents;
+    private bool $isBatch;
     private int $storeId;
 
-    public function __construct(array $ingestionMessages, int $storeId) {
-        $this->ingestionMessages = $ingestionMessages;
+    public function __construct(array $cloudEvents, int $storeId) {
+        $this->cloudEvents = $cloudEvents;
+        $this->isBatch = count($cloudEvents) != 1;
         $this->storeId = $storeId;
     }
 
-    /** @return Message[] */
-    public function getIngestionMessages(): array {
-        return $this->ingestionMessages;
+    /** @return CloudEventInterface[] */
+    public function getCloudEvents(): array {
+        return $this->cloudEvents;
+    }
+
+    public function isBatch(): bool {
+        return $this->isBatch;
     }
 
     public function getStoreId(): int {
@@ -26,32 +32,25 @@ class IngestionRequest {
     }
 
     public function toJson(): string {
-        return json_encode(get_object_vars($this));
+        $result = json_encode([
+            'isBatch' => $this->isBatch,
+            'storeId' => $this->storeId,
+            'cloudEvents' => 'CLOUD_EVENTS'
+        ]);
+
+        $serializedEvents = CloudEventsSerializer::serialize($this->cloudEvents);
+        return str_replace('"CLOUD_EVENTS"', $serializedEvents, $result);
     }
 
     public static function fromJson(string $json): IngestionRequest {
         $jsonAsArray = json_decode($json, true);
-
-        $ingestionMessages = array_map(
-            function (array $message) {
-                return self::createIngestionMessageFromArray($message);
-            },
-            $jsonAsArray['ingestionMessages']
-        );
-
+        $cloudEvents = $jsonAsArray['cloudEvents'];
+        $isBatch = $jsonAsArray['isBatch'];
         $storeId = intval($jsonAsArray['storeId']);
 
-        return new IngestionRequest($ingestionMessages, $storeId);
-    }
+        $cloudEvents = CloudEventsSerializer::deserialize(json_encode($cloudEvents), $isBatch);
 
-    private static function createIngestionMessageFromArray(array $messageAsArray): Message {
-        return new Message(
-            $messageAsArray['key'],
-            $messageAsArray['action'],
-            $messageAsArray['eventTime'] ? intval($messageAsArray['eventTime']['long']) : null,
-            (object)$messageAsArray['properties'],
-            $messageAsArray['payload'] ? new Data($messageAsArray['payload']['content']['bytes']) : null
-        );
+        return new IngestionRequest($cloudEvents, $storeId);
     }
 
 }

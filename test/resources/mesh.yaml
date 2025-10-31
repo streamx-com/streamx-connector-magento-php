@@ -1,33 +1,77 @@
-defaultRegistry: ghcr.io/streamx-dev/streamx-blueprints
-defaultImageTag: 1.0.1-jvm
+default:
+  image:
+    repository: ghcr.io/streamx-com/streamx-blueprints
+    tag: latest-jvm
 
 sources:
-  connector:
+  resources-source:
     outgoing:
-      - "data"
+      - ref: "inbox.data"
+        produces:
+          - "com.streamx.blueprints.data.published.v1"
+          - "com.streamx.blueprints.data.unpublished.v1"
+
+descriptors:
+  event-converter:
+    type: "processing"
+    incoming:
+      resources:
+        binding: "http-structured-json"
+    outgoing:
+      indexable-resources:
+        binding: "http-structured-json"
+
+  opensearch-sink:
+    type: "edge"
+    incoming:
+      indexable-resources:
+        binding: "http-structured-json"
+      indexable-resource-fragments:
+        binding: "http-structured-json"
 
 ingestion:
   rest-ingestion:
-    environment:
-      QUARKUS_HTTP_AUTH_PERMISSION_BEARER_POLICY: "permit"
+    containers:
+      - environment:
+          QUARKUS_HTTP_AUTH_PERMISSION_BEARER_POLICY: permit
 
 processing:
-  blueprint-relay-data:
-    image: relay-processing-service
-    incoming:
-      messages:
-        topic: inboxes/data
-    outgoing:
-      relayed-messages:
-        topic: outboxes/web-resources
-    environment:
-      MP_MESSAGING_INCOMING_MESSAGES_SCHEMA: "data-schema"
-      MP_MESSAGING_OUTGOING_RELAYED-MESSAGES_SCHEMA: "web-resource-schema"
+  blueprint-event-converter:
+    containers:
+      - image: event-converter
+        incoming:
+          resources:
+            ref: inbox.data
+        outgoing:
+          indexable-resources:
+            ref: outbox.indexable-resources
 
-delivery:
-  blueprint-web:
-    image: web-delivery-service
-    incoming:
-      web-resources:
-        topic: outboxes/web-resources
-    port: 8081
+edge:
+  blueprint-opensearch-sink:
+    volumes:
+      - name: "repository-volume"
+    containers:
+      - image: opensearch-sink
+        incoming:
+          indexable-resources:
+            ref: outbox.indexable-resources
+          indexable-resource-fragments:
+            ref: outbox.indexable-resource-fragments
+        ports:
+          - "8082:8080"
+        volumes:
+          - "repository-volume:/usr/share/opensearch/data"
+        environment:
+          QUARKUS_ELASTICSEARCH_HOSTS: "blueprint-opensearch-sink.opensearch:9200"
+          STREAMX_DELIVERY_SERVICE_READINESS_CHECK_ENABLED: "false"
+      - name: "opensearch"
+        image: "docker.io/opensearchproject/opensearch:2.16.0"
+        ports:
+          - "9201:9200"
+          - "9301:9300"
+        volumes:
+          - "repository-volume:/usr/share/opensearch/data"
+        environment:
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: "myStrongPassword123@456"
+          discovery.type: "single-node"

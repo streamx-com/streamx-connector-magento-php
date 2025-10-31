@@ -46,7 +46,7 @@ class FullReindexTest extends BaseStreamxConnectorPublishTest {
             ]);
             $this->assertExactDataIsPublished($configurableProductKey, 'original-hoodie-product.json');
             $this->assertExactDataIsPublished($configurableProductKeyInSecondStore, 'original-hoodie-product.json');
-            $this->assertExactDataIsPublished($configurableProductKeyInSecondWebsite, 'original-hoodie-product-in-second-website.json');
+            $this->assertExactDataIsPublished($configurableProductKeyInSecondWebsite, 'original-hoodie-product-in-second-website.json', [], 15);
         } finally {
             ConfigurationEditUtils::restoreConfigurationValue(ConfigurationKeyPaths::EXPORT_PRODUCTS_NOT_VISIBLE_INDIVIDUALLY);
         }
