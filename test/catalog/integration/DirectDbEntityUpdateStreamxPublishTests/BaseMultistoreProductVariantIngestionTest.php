@@ -71,6 +71,8 @@ abstract class BaseMultistoreProductVariantIngestionTest extends BaseDirectDbEnt
     }
 
     protected function setUp(): void {
+        parent::setUp();
+
         // prepare initial state for every test in this class: make all tested products published (so every test can verify if some are unpublished)
         $this->removeFromStreamX(
             self::$keyOfParentInStore1, self::$keyOfVariant1InStore1, self::$keyOfVariant2InStore1,
