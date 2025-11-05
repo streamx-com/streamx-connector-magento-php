@@ -28,7 +28,7 @@ abstract class BaseStreamxTest extends TestCase {
     use ValidationFileUtils;
 
     protected const STREAMX_REST_INGESTION_URL = "http://localhost:8080";
-    protected const EVENT_SOURCE = 'magento-connector';
+    protected const EVENT_SOURCE = 'magento-connector-php';
     protected const PUBLISHING_EVENT_TYPE = 'com.streamx.blueprints.data.published.v1';
     protected const UNPUBLISHING_EVENT_TYPE = 'com.streamx.blueprints.data.unpublished.v1';
 

@@ -44,4 +44,4 @@ jobs:
 
       - name: Summary and next steps
         run: |
-          echo "To make the new version publicly available via Composer, go to https://packagist.org/packages/streamx/magento-connector and click Update"
+          echo "To make the new version publicly available via Composer, go to https://packagist.org/packages/streamx/magento-connector-php and click Update"
