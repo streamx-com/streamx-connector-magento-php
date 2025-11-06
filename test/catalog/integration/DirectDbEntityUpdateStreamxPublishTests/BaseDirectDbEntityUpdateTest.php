@@ -14,4 +14,23 @@ use StreamX\ConnectorCatalog\test\integration\BaseStreamxConnectorPublishTest;
  */
 abstract class BaseDirectDbEntityUpdateTest extends BaseStreamxConnectorPublishTest {
     const INDEXER_MODE = parent::UPDATE_BY_SCHEDULE;
+
+    protected function setUp(): void {
+        $this->markAllPendingMviewOperationsAsExecuted();
+        parent::setUp();
+    }
+
+    private function markAllPendingMviewOperationsAsExecuted(): void {
+        foreach (static::INDEXER_IDS as $indexerId) {
+            $query = "
+                UPDATE mview_state
+                SET version_id = (
+                    SELECT MAX(version_id)
+                    FROM ${indexerId}_cl
+                )
+                WHERE view_id = '$indexerId'
+            ";
+            self::$db->execute($query);
+        }
+    }
 }
