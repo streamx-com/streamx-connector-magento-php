@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95b2edb6a49a54e71f0aeab2e8aaaeb9",
+    "content-hash": "dd9437cbed98ff1392bc1faaba587e25",
     "packages": [
         {
             "name": "brick/math",
@@ -65,6 +65,64 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "cloudevents/sdk-php",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cloudevents/sdk-php.git",
+                "reference": "2d2f14720c83e4ef2b8e17250817b25d59ba055b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cloudevents/sdk-php/zipball/2d2f14720c83e4ef2b8e17250817b25d59ba055b",
+                "reference": "2d2f14720c83e4ef2b8e17250817b25d59ba055b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "php": "^7.4.15 || ^8.0.2",
+                "symfony/polyfill-php80": "^1.26"
+            },
+            "require-dev": {
+                "guzzlehttp/psr7": "^2.4.3",
+                "php-http/discovery": "^1.15.2",
+                "phpunit/phpunit": "^9.6.3 || ^10.0.12",
+                "psalm/phar": "5.26.1",
+                "psr/http-factory": "^1.0.1",
+                "psr/http-message": "^1.0.1",
+                "squizlabs/php_codesniffer": "3.7.2"
+            },
+            "suggest": {
+                "php-http/discovery": "Required for automatic discovery of HTTP message factories in the HTTP Marshaller.",
+                "psr/http-factory": "Required for use of the HTTP Marshaller.",
+                "psr/http-factory-implementation": "Required for use of the HTTP Marshaller.",
+                "psr/http-message": "Required for use of the HTTP Marshaller and Unmarshaller.",
+                "psr/http-message-implementation": "Required for use of the HTTP Marshaller and Unmarshaller."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CloudEvents\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "CloudEvents SDK",
+            "support": {
+                "issues": "https://github.com/cloudevents/sdk-php/issues",
+                "source": "https://github.com/cloudevents/sdk-php"
+            },
+            "time": "2025-02-07T18:31:27+00:00"
         },
         {
             "name": "colinmollenhour/credis",
@@ -6210,20 +6268,21 @@
             "time": "2023-09-03T09:24:00+00:00"
         },
         {
-            "name": "streamx/ingestion-client",
-            "version": "1.0.8",
+            "name": "streamx/ingestion-client-php",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/streamx-dev/streamx-ingestion-php.git",
-                "reference": "479754fca95809bf376ccf375428218790476f70"
+                "url": "https://github.com/streamx-com/streamx-ingestion-client-php.git",
+                "reference": "1293ea80eb424460337904b041421bbd0b89d7df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/streamx-dev/streamx-ingestion-php/zipball/479754fca95809bf376ccf375428218790476f70",
-                "reference": "479754fca95809bf376ccf375428218790476f70",
+                "url": "https://api.github.com/repos/streamx-com/streamx-ingestion-client-php/zipball/1293ea80eb424460337904b041421bbd0b89d7df",
+                "reference": "1293ea80eb424460337904b041421bbd0b89d7df",
                 "shasum": ""
             },
             "require": {
+                "cloudevents/sdk-php": "^1.2",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0"
             },
@@ -6247,10 +6306,10 @@
             ],
             "description": "PHP ingestion client for StreamX - a Digital Experience Data Mesh.",
             "support": {
-                "issues": "https://github.com/streamx-dev/streamx-ingestion-php/issues",
-                "source": "https://github.com/streamx-dev/streamx-ingestion-php/tree/1.0.8"
+                "issues": "https://github.com/streamx-com/streamx-ingestion-client-php/issues",
+                "source": "https://github.com/streamx-com/streamx-ingestion-client-php/tree/2.0.3"
             },
-            "time": "2025-10-14T06:56:11+00:00"
+            "time": "2025-11-05T11:57:26+00:00"
         },
         {
             "name": "symfony/cache",

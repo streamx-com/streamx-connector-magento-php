@@ -16,6 +16,7 @@ class ProductUpdateTest extends BaseDirectDbEntityUpdateTest {
     /** @test */
     public function shouldPublishSimpleProductEditedDirectlyInDatabase() {
         $this->shouldPublishProductEditedDirectlyInDatabase('Joust Duffle Bag', 'bag');
+        usleep(250_000); // wait for 1/4 second to give time for the logs to be written
         $this->logFileUtils->verifyLoggedExactlyOnce(
             'Consuming message with ingestion keys ["default_product:1"]',
             'Consuming message with ingestion keys ["store_2_product:1"]',

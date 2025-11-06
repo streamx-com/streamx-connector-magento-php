@@ -68,7 +68,7 @@ bin/composer config repositories.streamx-connector-test-endpoints  path  app/cod
 # Install the connector (along with a module that turns off Two Factor Auth for development purposes and an extension for debugging or gathering code coverage)
 # Note: if the command asks you for a github access token - just press ENTER
 bin/composer require \
-  "streamx/magento-connector" \
+  "streamx/magento-connector-php" \
   "streamx/magento-connector-test-endpoints" \
   "markshust/magento2-module-disabletwofactorauth" \
   "ext-xdebug"

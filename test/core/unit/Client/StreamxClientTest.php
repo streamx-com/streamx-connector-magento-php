@@ -2,15 +2,16 @@
 
 namespace StreamX\ConnectorCore\test\unit\Client;
 
+use CloudEvents\V1\CloudEventInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Streamx\Clients\Ingestion\Publisher\Message;
 use StreamX\ConnectorCatalog\Indexer\CategoryIndexer;
 use StreamX\ConnectorCatalog\Indexer\ProductIndexer;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqConfiguration;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqIngestionRequestsSender;
 use StreamX\ConnectorCore\Client\StreamxClient;
+use StreamX\ConnectorCore\Client\StreamxClientConfiguration;
 use StreamX\ConnectorCore\Client\StreamxIngestor;
 
 class StreamxClientTest extends TestCase {
@@ -23,10 +24,16 @@ class StreamxClientTest extends TestCase {
         $this->storeMock->method('getId')->willReturn(5);
         $this->storeMock->method('getCode')->willReturn('store_5');
 
+        $streamxClientConfiguration = $this->createMock(StreamxClientConfiguration::class);
+        $streamxClientConfiguration->method('getEventSource')->willReturn('test-source');
+        $streamxClientConfiguration->method('getPublishingEventType')->willReturn('publish');
+        $streamxClientConfiguration->method('getUnpublishingEventType')->willReturn('unpublish');
+
         $this->clientSpy = $this
             ->getMockBuilder(StreamxClient::class)
             ->setConstructorArgs([
                 $this->createMock(LoggerInterface::class),
+                $streamxClientConfiguration,
                 $this->createMock(RabbitMqConfiguration::class),
                 $this->createMock(RabbitMqIngestionRequestsSender::class),
                 $this->createMock(StreamxIngestor::class)
@@ -36,10 +43,10 @@ class StreamxClientTest extends TestCase {
     }
 
     /** @test */
-    public function verifyPublishKeyAndSxTypeForSimpleProduct() {
+    public function verifyPublishKeyAndDataTypeForSimpleProduct() {
         $product = ['id' => '1'];
 
-        $this->publishAndVerifyIngestionMessage(
+        $this->publishAndVerifyCloudEvent(
             $product,
             ProductIndexer::INDEXER_ID,
             'store_5_product:1',
@@ -49,7 +56,7 @@ class StreamxClientTest extends TestCase {
     }
 
     /** @test */
-    public function verifyPublishKeyAndSxTypeForConfigurableProduct() {
+    public function verifyPublishKeyAndDataTypeForConfigurableProduct() {
         $product = [
             'id' => '2',
             'variants' => [
@@ -57,7 +64,7 @@ class StreamxClientTest extends TestCase {
             ]
         ];
 
-        $this->publishAndVerifyIngestionMessage(
+        $this->publishAndVerifyCloudEvent(
             $product,
             ProductIndexer::INDEXER_ID,
             'store_5_product:2',
@@ -67,10 +74,10 @@ class StreamxClientTest extends TestCase {
     }
 
     /** @test */
-    public function verifyUnpublishKeyAndSxTypeForProduct() {
+    public function verifyUnpublishKeyAndDataTypeForProduct() {
         $productId = 3;
 
-        $this->unpublishAndVerifyIngestionMessage(
+        $this->unpublishAndVerifyCloudEvent(
             $productId,
             ProductIndexer::INDEXER_ID,
             'store_5_product:3',
@@ -79,10 +86,10 @@ class StreamxClientTest extends TestCase {
     }
 
     /** @test */
-    public function verifyPublishKeyAndSxTypeForCategory() {
+    public function verifyPublishKeyAndDataTypeForCategory() {
         $category = ['id' => '4'];
 
-        $this->publishAndVerifyIngestionMessage(
+        $this->publishAndVerifyCloudEvent(
             $category,
             CategoryIndexer::INDEXER_ID,
             'store_5_category:4',
@@ -92,10 +99,10 @@ class StreamxClientTest extends TestCase {
     }
 
     /** @test */
-    public function verifyUnpublishKeyAndSxTypeForCategory() {
+    public function verifyUnpublishKeyAndDataTypeForCategory() {
         $categoryId = 4;
 
-        $this->unpublishAndVerifyIngestionMessage(
+        $this->unpublishAndVerifyCloudEvent(
             $categoryId,
             CategoryIndexer::INDEXER_ID,
             'store_5_category:4',
@@ -103,40 +110,40 @@ class StreamxClientTest extends TestCase {
         );
     }
 
-    private function publishAndVerifyIngestionMessage(array $entityToIngest, string $sourceIndexerId, string $expectedKey, string $expectedSxType, string $expectedPayload) {
-        $this->setupIngestionMessageVerification($sourceIndexerId, 'publish', $expectedKey, $expectedSxType, $expectedPayload);
+    private function publishAndVerifyCloudEvent(array $entityToIngest, string $sourceIndexerId, string $expectedKey, string $expectedDataType, string $expectedPayload) {
+        $this->setupCloudEventVerification($sourceIndexerId, 'publish', $expectedKey, $expectedDataType, $expectedPayload);
         $this->clientSpy->publish([$entityToIngest], $sourceIndexerId, $this->storeMock);
     }
 
-    private function unpublishAndVerifyIngestionMessage(int $productId, string $sourceIndexerId, string $expectedKey, string $expectedSxType) {
-        $this->setupIngestionMessageVerification($sourceIndexerId, 'unpublish', $expectedKey, $expectedSxType, null);
+    private function unpublishAndVerifyCloudEvent(int $productId, string $sourceIndexerId, string $expectedKey, string $expectedDataType) {
+        $this->setupCloudEventVerification($sourceIndexerId, 'unpublish', $expectedKey, $expectedDataType, null);
         $this->clientSpy->unpublish([$productId], $sourceIndexerId, $this->storeMock);
     }
 
-    private function setupIngestionMessageVerification(string $sourceIndexerId, string $expectedAction, string $expectedKey, string $expectedSxType, ?string $expectedPayload) {
+    private function setupCloudEventVerification(string $sourceIndexerId, string $expectedEventType, string $expectedKey, string $expectedDataType, ?string $expectedPayload) {
         $this->clientSpy->expects($this->once())
             ->method('ingest')
             ->with(
-                $this->callback(fn ($ingestionMessagesArg) =>
-                    $this->assertMessage($ingestionMessagesArg, $expectedKey, $expectedSxType, $expectedAction, $expectedPayload)
+                $this->callback(fn ($cloudEventArg) =>
+                    $this->assertCloudEvent($cloudEventArg, $expectedKey, $expectedDataType, $expectedEventType, $expectedPayload)
                 ),
-                $expectedAction,
+                $expectedEventType,
                 $sourceIndexerId
             );
     }
 
-    private function assertMessage(array $ingestionMessages, string $expectedKey, string $expectedSxType, string $expectedAction, ?string $expectedPayload): bool {
-        $this->assertCount(1, $ingestionMessages);
-        $message = $ingestionMessages[0];
+    private function assertCloudEvent(array $cloudEvents, string $expectedKey, string $expectedDataType, string $expectedEventType, ?string $expectedPayload): bool {
+        $this->assertCount(1, $cloudEvents);
+        $event = $cloudEvents[0];
 
-        $this->assertInstanceOf(Message::class, $message);
-        $this->assertEquals($expectedKey, $message->key);
-        $this->assertEquals($expectedSxType, $message->properties->{'sx:type'});
-        $this->assertEquals($expectedAction, $message->action);
+        $this->assertInstanceOf(CloudEventInterface::class, $event);
+        $this->assertEquals($expectedKey, $event->getSubject());
+        $this->assertEquals($expectedDataType, $event->getData()->type);
+        $this->assertEquals($expectedEventType, $event->getType());
         if ($expectedPayload) {
-            $this->assertEquals($expectedPayload, $message->payload->content->bytes);
+            $this->assertEquals($expectedPayload, base64_decode($event->getData()->content));
         } else {
-            $this->assertNull($message->payload);
+            $this->assertNull($event->getData()->content);
         }
         return true;
     }

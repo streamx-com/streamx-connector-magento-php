@@ -16,12 +16,16 @@ class StreamxClientConfiguration extends BaseConfigurationReader
         return (string)$this->getStoreLevelConfigValue('ingestion_base_url', $storeId);
     }
 
-    public function getChannelName(int $storeId): string {
-        return (string)$this->getStoreLevelConfigValue('channel_name', $storeId);
+    public function getEventSource(int $storeId): string {
+        return (string)$this->getStoreLevelConfigValue('event_source', $storeId);
     }
 
-    public function getChannelSchemaName(int $storeId): string {
-        return (string)$this->getStoreLevelConfigValue('channel_schema_name', $storeId);
+    public function getPublishingEventType(int $storeId): string {
+        return (string)$this->getStoreLevelConfigValue('publishing_event_type', $storeId);
+    }
+
+    public function getUnpublishingEventType(int $storeId): string {
+        return (string)$this->getStoreLevelConfigValue('unpublishing_event_type', $storeId);
     }
 
     public function getAuthToken(int $storeId): ?string {

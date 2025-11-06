@@ -46,11 +46,17 @@
                     <label>StreamX Rest Ingestion base URL</label>
                     <comment>Base URL for StreamX Rest Ingestion endpoints</comment>
                 </field>
-                <field id="channel_name" translate="label comment" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Channel name</label>
+                <field id="event_source" translate="label comment" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Event source</label>
+                    <comment>Value to be used for "source" property of data publish/unpublish Cloud Events</comment>
                 </field>
-                <field id="channel_schema_name" translate="label comment" type="text" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Channel schema name</label>
+                <field id="publishing_event_type" translate="label comment" type="text" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Publishing event type</label>
+                    <comment>Event type expected by the StreamX instance for data publish Cloud Events</comment>
+                </field>
+                <field id="unpublishing_event_type" translate="label comment" type="text" sortOrder="41" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Unpublishing event type</label>
+                    <comment>Event type expected by the StreamX instance for data unpublish Cloud Events</comment>
                 </field>
                 <field id="auth_token" translate="label comment" type="text" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Auth token</label>

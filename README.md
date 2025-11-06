@@ -1,7 +1,7 @@
 ### 1. Install StreamX Connector in Magento
 ```bash
 cd $MAGENTO_ROOT_DIR
-bin/composer require streamx/magento-connector
+bin/composer require streamx/magento-connector-php
 ```
 
 Note: if the command asks you for a github access token - just press ENTER

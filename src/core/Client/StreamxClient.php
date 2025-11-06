@@ -2,10 +2,11 @@
 
 namespace StreamX\ConnectorCore\Client;
 
+use CloudEvents\V1\CloudEventInterface;
 use Exception;
 use Magento\Store\Api\Data\StoreInterface;
 use Psr\Log\LoggerInterface;
-use Streamx\Clients\Ingestion\Publisher\Message;
+use StreamX\ConnectorCore\Client\Model\CloudEventUtils;
 use StreamX\ConnectorCore\Client\Model\Data;
 use StreamX\ConnectorCore\Client\RabbitMQ\IngestionRequest;
 use StreamX\ConnectorCore\Client\RabbitMQ\RabbitMqConfiguration;
@@ -15,50 +16,55 @@ use StreamX\ConnectorCore\Traits\ExceptionLogger;
 class StreamxClient {
     use ExceptionLogger;
 
-    private const STREAMX_TYPE_PROPERTY_NAME = 'sx:type';
-
     private LoggerInterface $logger;
+    private StreamxClientConfiguration $streamxClientConfiguration;
     private RabbitMqConfiguration $rabbitMqConfiguration;
     private RabbitMqIngestionRequestsSender $rabbitMqSender;
     private StreamxIngestor $streamxIngestor;
 
     public function __construct(
         LoggerInterface $logger,
+        StreamxClientConfiguration $streamxClientConfiguration,
         RabbitMqConfiguration $rabbitMqConfiguration,
         RabbitMqIngestionRequestsSender $rabbitMqSender,
         StreamxIngestor $streamxIngestor
     ) {
         $this->logger = $logger;
+        $this->streamxClientConfiguration = $streamxClientConfiguration;
         $this->rabbitMqConfiguration = $rabbitMqConfiguration;
         $this->rabbitMqSender = $rabbitMqSender;
         $this->streamxIngestor = $streamxIngestor;
     }
 
     public function publish(array $entities, string $indexerId, StoreInterface $store): void {
-        $publishMessages = [];
-        foreach ($entities as $entity) {
-            $entityType = EntityType::fromEntityAndIndexerId($entity, $indexerId);
-            $key = $this->createStreamxKey($entityType, $entity['id'], $store);
-            $payload = new Data(json_encode($entity));
-            $publishMessages[] = Message::newPublishMessage($key, $payload)
-                ->withProperty(self::STREAMX_TYPE_PROPERTY_NAME, $entityType->getFullyQualifiedName())
-                ->build();
-        }
-
-        $this->ingest($publishMessages, Message::PUBLISH_ACTION, $indexerId, $store);
+        $this->createEventsAndIngest(true, $entities, $indexerId, $store);
     }
 
     public function unpublish(array $entityIds, string $indexerId, StoreInterface $store): void {
-        $unpublishMessages = [];
-        foreach ($entityIds as $entityId) {
-            $entityType = EntityType::fromIndexerId($indexerId);
-            $key = $this->createStreamxKey($entityType, (string) $entityId, $store);
-            $unpublishMessages[] = Message::newUnpublishMessage($key)
-                ->withProperty(self::STREAMX_TYPE_PROPERTY_NAME, $entityType->getFullyQualifiedName())
-                ->build();
-        }
+        $entities = array_map(fn($id) => ['id' => (string) $id], $entityIds);
+        $this->createEventsAndIngest(false, $entities, $indexerId, $store);
+    }
 
-        $this->ingest($unpublishMessages, Message::UNPUBLISH_ACTION, $indexerId, $store);
+    public function createEventsAndIngest(bool $isPublish, array $entities, string $indexerId, StoreInterface $store): void {
+        $storeId = (int)$store->getId();
+        $eventSource = $this->streamxClientConfiguration->getEventSource($storeId);
+        $eventType = $isPublish
+            ? $this->streamxClientConfiguration->getPublishingEventType($storeId)
+            : $this->streamxClientConfiguration->getUnpublishingEventType($storeId);
+
+        $events = [];
+        foreach ($entities as $entity) {
+            $content = $isPublish
+                ? json_encode($entity)
+                : null;
+            $entityType = $isPublish
+                ? EntityType::fromEntityAndIndexerId($entity, $indexerId)
+                : EntityType::fromIndexerId($indexerId);
+            $key = $this->createStreamxKey($entityType, $entity['id'], $store);
+            $data = new Data($content, $entityType->getFullyQualifiedName());
+            $events[] = CloudEventUtils::createEvent($key, $eventType, $eventSource, $data);
+        }
+        $this->ingest($events, $eventType, $indexerId, $store);
     }
 
     private function createStreamxKey(EntityType $entityType, string $entityId, StoreInterface $store): string {
@@ -70,24 +76,24 @@ class StreamxClient {
     }
 
     /**
-     * @param Message[] $ingestionMessages
+     * @param CloudEventInterface[] $cloudEvents
      */
-    protected function ingest(array $ingestionMessages, string $action, string $indexerId, StoreInterface $store): void {
-        $keys = array_column($ingestionMessages, 'key');
-        $messagesCount = count($ingestionMessages);
-        $this->logger->info("Start sending $messagesCount $action entities from $indexerId with keys " . json_encode($keys));
+    protected function ingest(array $cloudEvents, string $eventType, string $indexerId, StoreInterface $store): void {
+        $keys = CloudEventUtils::extractSubjects($cloudEvents);
+        $eventsCount = count($cloudEvents);
+        $this->logger->info("Start sending $eventsCount $eventType entities from $indexerId with keys " . json_encode($keys));
         $storeId = (int) $store->getId();
 
         try {
             if ($this->rabbitMqConfiguration->isEnabled()) {
-                $this->rabbitMqSender->send(new IngestionRequest($ingestionMessages, $storeId));
+                $this->rabbitMqSender->send(new IngestionRequest($cloudEvents, $storeId));
             } else {
-                $this->streamxIngestor->send($ingestionMessages, $storeId);
+                $this->streamxIngestor->send($cloudEvents, $storeId);
             }
         } catch (Exception $e) {
-            $this->logExceptionAsError('Message sending exception', $e);
+            $this->logExceptionAsError('Event sending exception', $e);
         }
 
-        $this->logger->info("Finished sending $messagesCount $action entities from $indexerId");
+        $this->logger->info("Finished sending $eventsCount $eventType entities from $indexerId");
     }
 }
