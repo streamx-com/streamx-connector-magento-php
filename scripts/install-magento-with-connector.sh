@@ -55,6 +55,9 @@ bin/magento config:set admin/security/session_lifetime 86400
 ### Install sample data
 bin/magento sampledata:deploy
 
+### Install IDE autocomplete feature for xml configuration files such as mview.xml
+bin/dev-urn-catalog-generate
+
 ### Upload StreamX Connector and Connector Test Tools to Magento
 cd ..
 bash scripts/copy-connector-to-magento.sh
@@ -78,13 +81,20 @@ bin/magento module:enable --all
 cd ..
 bash scripts/reload-magento-modules.sh
 
-cat <<EOF
-  Installation done. Additional required manual steps:
-   - start your local StreamX instance (using test/resources/mesh.yaml as minimal mesh setup)
-   - when it's up, execute: bash scripts/add-rest-ingestion-to-magento-network.sh
-   - configure the connector and set up stores by calling: curl -X PUT https://magento.test:444/rest/all/V1/stores/setup
-   - open a new terminal window and execute: cd magento
-   - execute: bin/magento cache:flush
-   - execute: bin/magento streamx:consumer:start
-   - run all tests to verify installation
-EOF
+# Additional steps
+echo "Installation done"
+echo "Please start your local StreamX instance (using test/resources/mesh.yaml as minimal mesh setup)"
+read -rp "Press Enter when you're done..."
+
+# Make StreamX Ingestion host visible from Magento containers
+bash scripts/add-rest-ingestion-to-magento-network.sh
+
+echo "Configuring the Connector and setting up stores..."
+curl -X PUT https://magento.test:444/rest/all/V1/stores/setup
+echo
+
+# Start RabbitMQ consumer
+echo "Starting RabbitMQ consumer. After that, the development environment is ready to use. You can run all tests to validate installation"
+cd magento
+# bin/magento cache:flush
+bin/magento streamx:consumer:start

@@ -65,7 +65,7 @@ class StoresControllerImpl implements StoresControllerInterface {
     /**
      * @inheritdoc
      */
-    public function setUpStoresAndWebsites(): void {
+    public function setUpStoresAndWebsites(): string {
         // make sure StreamX Connector is turned on
         $this->setGlobalLevelConfigValue(self::CONNECTOR_ENABLE_CONFIG_KEY, 1);
 
@@ -91,6 +91,8 @@ class StoresControllerImpl implements StoresControllerInterface {
             $product->setWebsiteIds($websiteIds);
             $this->productRepository->save($product);
         }
+
+        return 'OK';
     }
 
     private function getOrCreateStore(int $websiteId, string $storeCode, string $viewCode): Store {
