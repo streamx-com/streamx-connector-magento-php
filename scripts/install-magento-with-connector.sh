@@ -96,5 +96,4 @@ echo
 # Start RabbitMQ consumer
 echo "Starting RabbitMQ consumer. After that, the development environment is ready to use. You can run all tests to validate installation"
 cd magento
-# bin/magento cache:flush
 bin/magento streamx:consumer:start
