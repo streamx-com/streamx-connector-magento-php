@@ -24,7 +24,7 @@ class ImageUrlManager {
             return $relativeUrl;
         }
 
-        $storeBaseUrl = $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $this->settings->useRelativeUrlsForImages());
+        $storeBaseUrl = $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, true);
         return rtrim($storeBaseUrl, '/') . $relativeUrl;
     }
 }
