@@ -16,6 +16,9 @@ class ProductUpdateTest extends BaseAppEntityUpdateTest {
     /** @test */
     public function shouldPublishSimpleProductEditedUsingMagentoApplication() {
         $this->shouldPublishProductEditedUsingMagentoApplication('Joust Duffle Bag', 'bag');
+
+        // and
+        $this->assertImageIsPublished('/media/catalog/product/m/b/mb01-blue-0.jpg');
     }
 
     /** @test */
