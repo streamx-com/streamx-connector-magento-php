@@ -23,7 +23,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.11-SNAPSHOT-jvm # TODO: 3.0.10-native
+        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.10-native # TODO when version with disabling certificate validation is released - use it
         incoming:
           download-requests: {}
         outgoing:
