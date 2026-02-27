@@ -45,7 +45,7 @@ Ensure that Composer is installed on your system. If not, you can install it usi
 # Setup Magento docker images along with StreamX Connector
 Execute `scripts/install-magento-with-connector.sh`
 
-Verify magento.test hostname is added to /etc/hosts as alias to 127.0.0.1
+Verify magento-app-1 hostname is added to /etc/hosts as alias to 127.0.0.1
 
 Verify the Installation. The StreamX Connector module should be listed as enabled and ready to use in Magento:
 ```bash
@@ -54,10 +54,10 @@ bin/magento module:status
 ```
 
 ## Magento web page
-https://magento.test:444
+https://magento-app-1:444
 
 Verify sample data is available by searching for the term "Bag":
-https://magento.test:444/catalogsearch/result/?q=bag
+https://magento-app-1:444/catalogsearch/result/?q=bag
 
 In case of errors searching, refresh search index:
 ```bash
@@ -67,7 +67,7 @@ bin/magento indexer:reindex catalogsearch_fulltext
 ```
 
 ## Magento admin page
-https://magento.test:444/admin
+https://magento-app-1:444/admin
 
 Login using credentials from magento/env/magento.env file.
 
@@ -111,9 +111,9 @@ Note: in case of problems such as StreamX not starting or some of its containers
 StreamX connector calls StreamX Rest Ingestion service endpoint to publish/unpublish collected data.
 If you host both StreamX and Magento on Docker containers - perform the following action:
 
-To enable the connector to call the service by its hostname, add the `rest-ingestion` docker container to magento's network:
+To enable the connector to call the service by its hostname, add the `rest-ingestion.proxy` docker container to magento's network:
 ```bash
-bash scripts/add-rest-ingestion-to-magento-network.sh
+bash scripts/add-streamx-containers-to-magento-network.sh
 ```
 
 ## Where to find logs
@@ -203,9 +203,9 @@ SET GLOBAL general_log = 'OFF';
 
 ## Troubleshooting REST endpoints
  - make sure your endpoint relative path always starts with /V1/...
- - endpoints are mounted at base url https://magento.test:444/rest/all/V1/...
- - example endpoint that should be available out of the box: https://magento.test:444/rest/all/V1/directory/currency
- - review https://magento.test:444/rest/all/schema for any errors or additional information
+ - endpoints are mounted at base url https://magento-app-1:444/rest/all/V1/...
+ - example endpoint that should be available out of the box: https://magento-app-1:444/rest/all/V1/directory/currency
+ - review https://magento-app-1:444/rest/all/schema for any errors or additional information
 
 ## Measuring the Connector's code coverage on a running Magento PHP server
  - in PHP, coverage can be measured for a Http Request (all code executed by the code that handles the request is measured)

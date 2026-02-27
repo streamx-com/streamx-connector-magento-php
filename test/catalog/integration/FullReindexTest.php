@@ -18,7 +18,7 @@ class FullReindexTest extends BaseStreamxConnectorPublishTest {
         $simpleProductId = self::$db->getProductId('Joust Duffle Bag');
         $groupedProductId = self::$db->getProductId('Set of Sprite Yoga Straps');
         $variantProductId = self::$db->getProductId('Chaz Kangeroo Hoodie-XL-Orange');
-        $configurableProductId = self::$db->getProductId('Chaz Kangeroo Hoodie'); // this product is also assigned to second website, see StoresControllerImpl
+        $configurableProductId = self::$db->getProductId('Chaz Kangeroo Hoodie'); // this product is also assigned to second website, see InitControllerImpl
 
         // and
         $simpleProductKey = parent::productKey($simpleProductId);

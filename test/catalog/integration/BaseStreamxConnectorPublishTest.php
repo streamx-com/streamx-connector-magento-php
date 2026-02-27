@@ -13,7 +13,7 @@ use StreamX\ConnectorCatalog\test\integration\utils\MagentoMySqlQueryExecutor;
 
 /**
  * @inheritDoc
- *  Note: see StoresControllerImpl for additional stores and website created for these tests
+ *  Note: see InitControllerImpl for additional stores and website created for these tests
  */
 abstract class BaseStreamxConnectorPublishTest extends BaseStreamxTest {
 

@@ -16,9 +16,9 @@ use Magento\Store\Model\Website;
 use Magento\Store\Model\WebsiteFactory;
 use Magento\Store\Model\GroupFactory;
 use Magento\Store\Model\StoreFactory;
-use StreamX\ConnectorTestEndpoints\Api\StoresControllerInterface;
+use StreamX\ConnectorTestEndpoints\Api\InitControllerInterface;
 
-class StoresControllerImpl implements StoresControllerInterface {
+class InitControllerImpl implements InitControllerInterface {
 
     private const STORE_2_CODE = 'store_2';
     private const SECOND_WEBSITE_CODE = 'second_website';
@@ -29,6 +29,7 @@ class StoresControllerImpl implements StoresControllerInterface {
     private const CONNECTOR_ENABLE_CONFIG_KEY = 'streamx_connector_settings/general_settings/enable';
     private const RABBIT_MQ_ENABLE_CONFIG_KEY = 'streamx_connector_settings/rabbit_mq/enable';
     private const INDEXED_STORES_CONFIG_KEY = 'streamx_connector_settings/general_settings/indexed_stores';
+    private const USE_RELATIVE_URLS_FOR_IMAGES_CONFIG_KEY = 'streamx_connector_settings/catalog_settings/use_relative_urls_for_images';
 
     private WebsiteFactory $websiteFactory;
     private GroupFactory $groupFactory;
@@ -65,12 +66,15 @@ class StoresControllerImpl implements StoresControllerInterface {
     /**
      * @inheritdoc
      */
-    public function setUpStoresAndWebsites(): string {
+    public function init(): string {
         // make sure StreamX Connector is turned on
         $this->setGlobalLevelConfigValue(self::CONNECTOR_ENABLE_CONFIG_KEY, 1);
 
         // make sure RabbitMQ is enabled.
         $this->setGlobalLevelConfigValue(self::RABBIT_MQ_ENABLE_CONFIG_KEY, 1);
+
+        // to avoid communication issues between docker containers, use relative URLs of images
+        $this->setGlobalLevelConfigValue(self::USE_RELATIVE_URLS_FOR_IMAGES_CONFIG_KEY, 1);
 
         $defaultWebsite = array_values($this->storeManager->getWebsites())[0];
         $defaultStoreId = $this->storeManager->getStore('default')->getId();

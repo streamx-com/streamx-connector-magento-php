@@ -8,8 +8,8 @@
       "label": "Small",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg"
+          "value": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
+          "label": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg"
         }
       ],
       "isFacet": false
@@ -19,8 +19,8 @@
       "label": "Thumbnail",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg"
+          "value": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
+          "label": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg"
         }
       ],
       "isFacet": false
@@ -62,7 +62,7 @@
   "name": "Name modified for testing, was Set of Sprite Yoga Straps",
   "label": "Name modified for testing, was Set of Sprite Yoga Straps",
   "primaryImage": {
-    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
+    "url": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
     "alt": "Image"
   },
   "description": "<p>Great set of Sprite Yoga Straps for every stretch and hold you need. There are three straps in this set: 6', 8' and 10'.<\/p>\n<ul>\n<li> 100% soft and durable cotton.\n<li> Plastic cinch buckle is easy to use.\n<li> Choice of three natural colors made from phthalate and heavy metal free dyes.\n<\/ul>",
@@ -113,7 +113,7 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
+      "url": "\/media\/catalog\/product\/l\/u\/luma-yoga-strap-set.jpg",
       "alt": "Image"
     }
   ],

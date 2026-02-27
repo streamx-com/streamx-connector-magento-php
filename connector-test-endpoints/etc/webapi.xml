@@ -128,8 +128,8 @@
     </resources>
   </route>
 
-  <route url="/V1/stores/setup" method="PUT">
-    <service class="StreamX\ConnectorTestEndpoints\Api\StoresControllerInterface" method="setUpStoresAndWebsites"/>
+  <route url="/V1/init" method="PUT">
+    <service class="StreamX\ConnectorTestEndpoints\Api\InitControllerInterface" method="init"/>
     <resources>
       <resource ref="anonymous"/>
     </resources>

@@ -8,8 +8,8 @@
       "label": "Small",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg"
+          "value": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
+          "label": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg"
         }
       ],
       "isFacet": false
@@ -19,8 +19,8 @@
       "label": "Thumbnail",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg"
+          "value": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
+          "label": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg"
         }
       ],
       "isFacet": false
@@ -84,7 +84,7 @@
   "name": "Sprite Foam Roller",
   "label": "Sprite Foam Roller",
   "primaryImage": {
-    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
+    "url": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
     "alt": "Image"
   },
   "description": "<p>It hurts so good to use the Sprite Foam Roller on achy, tired muscles for myofascial massage therapy. Or you can add this fundamental piece to your Pilates and yoga accouterment, or apply towards core stability, strengthening and balance exercise. <\/p>\n<ul>\n<li>6'' wide by 12'' long.<\/li>\n<li>Safe for myofascial release.<\/li>\n<li>EPP or PE foam options.<\/li>\n<li>Solid, dense, closed-cell foam.<\/li>\n<\/ul>",
@@ -139,7 +139,7 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
+      "url": "\/media\/catalog\/product\/l\/u\/luma-foam-roller.jpg",
       "alt": "Image"
     }
   ],

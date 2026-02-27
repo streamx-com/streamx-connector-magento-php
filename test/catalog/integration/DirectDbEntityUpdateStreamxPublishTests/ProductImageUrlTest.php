@@ -30,7 +30,7 @@ class ProductImageUrlTest extends BaseDirectDbEntityUpdateTest {
         try {
             self::reindexMview();
             $this->assertExactDataIsPublished($expectedKey, "original-bag-product.json", [
-                'my-cdn.com' => 'magento.test:444'
+                'my-cdn.com' => 'magento-app-1:444'
             ]);
         } finally {
             self::$db->revertProductDummyUpdate($productId);

@@ -6,7 +6,7 @@ It's designed to work with PHP Storm IDE.
    - configuration type: `PHP Remote Debug`
    - give it some name of your choice
    - under Configuration enable the `Filter debug connection by IDE key`
-   - add new server: host = `magento.test`, port = `444`, debugger = `Xdebug`
+   - add new server: host = `magento-app-1`, port = `444`, debugger = `Xdebug`
    - check `Use path mappings checkbox`
    - add mapping from `[your full local path to streamx-connector-magento]/src` to `/var/www/html/app/code/StreamX/Connector/src`
    - add mapping from `[your full local path to streamx-connector-magento]/connector-test-endpoints` to `/var/www/html/app/code/StreamX/ConnectorTestEndpoints`

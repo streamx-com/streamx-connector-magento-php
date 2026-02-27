@@ -40,7 +40,7 @@
   "name": "Dual Handle Cardio Ball",
   "label": "Dual Handle Cardio Ball",
   "primaryImage": {
-    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
+    "url": "\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
     "alt": "Image"
   },
   "description": "<p>Make the most of your limited workout window with our Dual-Handle Cardio Ball. The 15-lb ball maximizes the effort-impact to your abdominal, upper arm and lower-body muscles. It features a handle on each side for a firm, secure grip.<\/p>\n<ul>\n<li>Durable plastic shell with sand fill.\n<li>Two handles.\n<li>15 lbs.\n<\/ul>",
@@ -95,11 +95,11 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
+      "url": "\/media\/catalog\/product\/u\/g\/ug07-bk-0.jpg",
       "alt": "Image"
     },
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/u\/g\/ug07-bk-0_alt1.jpg",
+      "url": "\/media\/catalog\/product\/u\/g\/ug07-bk-0_alt1.jpg",
       "alt": "Image"
     }
   ],

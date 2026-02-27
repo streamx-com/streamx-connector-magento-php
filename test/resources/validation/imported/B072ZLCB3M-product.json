@@ -30,8 +30,8 @@
       "label": "Thumbnail",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/8\/1\/RANDOM.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/8\/1\/RANDOM.jpg"
+          "value": "\/media\/catalog\/product\/8\/1\/RANDOM.jpg",
+          "label": "\/media\/catalog\/product\/8\/1\/RANDOM.jpg"
         }
       ],
       "isFacet": false
@@ -134,7 +134,7 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/8\/1\/RANDOM.jpg",
+      "url": "\/media\/catalog\/product\/8\/1\/RANDOM.jpg",
       "alt": "Rivet Table"
     }
   ],

@@ -18,7 +18,7 @@ class MultistoreProductPublishTest extends BaseDirectDbEntityUpdateTest {
 
     /** @test */
     public function shouldPublishProductsFromWebsite() {
-        // given (as in StoresControllerImpl), the following products exist in both websites:
+        // given (as in InitControllerImpl), the following products exist in both websites:
         //  - simple products 4, 5 and 6
         //  - product 61 that is a variant of configurable product 62
         $testedProductIds = [
