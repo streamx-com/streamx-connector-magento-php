@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Streamx\Clients\Ingestion\Builders\StreamxClientBuilders;
 use StreamX\ConnectorCatalog\test\integration\utils\CodeCoverageReportGenerator;
-use StreamX\ConnectorCatalog\test\integration\utils\JsonFormatter;
 use StreamX\ConnectorCatalog\test\integration\utils\ValidationFileUtils;
 use StreamX\ConnectorCore\Client\Model\CloudEventUtils;
 use StreamX\ConnectorCore\Client\Model\Data;
@@ -58,14 +57,13 @@ abstract class BaseStreamxTest extends TestCase {
      */
     protected function assertExactDataIsPublished(string $key, string $validationFileName, array $regexReplacements = [], int $timeoutSeconds = self::WAIT_FOR_INGESTED_DATA_TIMEOUT_SECONDS): ?string {
         $expectedJson = $this->readValidationFileContent($validationFileName);
-        $expectedFormattedJson = JsonFormatter::formatJson($expectedJson);
 
         $startTime = time();
         $response = null;
         while (time() - $startTime < $timeoutSeconds) {
             $response = $this->search($key);
             if (!empty($response)) {
-                if ($this->verifySameJsonsSilently($expectedFormattedJson, $response, $regexReplacements)) {
+                if ($this->verifySameJsonsSilently($expectedJson, $response, $regexReplacements)) {
                     return $response;
                 }
             }
@@ -73,7 +71,7 @@ abstract class BaseStreamxTest extends TestCase {
         }
 
         if (!empty($response)) {
-            $this->verifySameJsonsOrThrow($expectedFormattedJson, $response, $regexReplacements);
+            $this->verifySameJsonsOrThrow($expectedJson, $response, $regexReplacements);
         } else {
             $this->fail("$key: not found");
         }
