@@ -50,6 +50,11 @@
                         <field id="streamx_connector_settings/catalog_settings/use_prices_index">1</field>
                     </depends>
                 </field>
+                <field id="use_relative_urls_for_images" type="select" translate="label comment" sortOrder="400" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Use relative URLs for product images</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Set this option to Yes for relative URLs, or No to use absolute URLs</comment>
+                </field>
             </group>
         </section>
     </system>

@@ -8,7 +8,7 @@
                 <batch_indexing_size>100</batch_indexing_size>
             </general_settings>
             <streamx_client>
-                <ingestion_base_url>http://rest-ingestion:8080</ingestion_base_url>
+                <ingestion_base_url>http://rest-ingestion.proxy:8080</ingestion_base_url>
                 <event_source>magento-connector-php</event_source>
                 <publishing_event_type>com.streamx.blueprints.data.published.v1</publishing_event_type>
                 <unpublishing_event_type>com.streamx.blueprints.data.unpublished.v1</unpublishing_event_type>

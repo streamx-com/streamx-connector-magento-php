@@ -11,6 +11,7 @@
                 <child_product_attributes>small_image,thumbnail,special_price,special_from_date,special_to_date</child_product_attributes>
                 <use_prices_index>0</use_prices_index>
                 <use_catalog_price_rules>0</use_catalog_price_rules>
+                <use_relative_urls_for_images>0</use_relative_urls_for_images>
             </catalog_settings>
         </streamx_connector_settings>
     </default>

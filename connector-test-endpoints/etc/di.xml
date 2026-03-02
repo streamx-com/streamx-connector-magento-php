@@ -27,8 +27,8 @@
       type="StreamX\ConnectorTestEndpoints\Impl\ConfigurationEditControllerImpl"/>
 
     <preference
-      for="StreamX\ConnectorTestEndpoints\Api\StoresControllerInterface"
-      type="StreamX\ConnectorTestEndpoints\Impl\StoresControllerImpl"/>
+      for="StreamX\ConnectorTestEndpoints\Api\InitControllerInterface"
+      type="StreamX\ConnectorTestEndpoints\Impl\InitControllerImpl"/>
 
     <preference
       for="StreamX\ConnectorTestEndpoints\Api\ProductPurchaseControllerInterface"

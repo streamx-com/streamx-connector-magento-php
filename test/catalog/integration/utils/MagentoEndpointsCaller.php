@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7\Request;
 
 class MagentoEndpointsCaller {
 
-    private const MAGENTO_REST_API_BASE_URL = 'https://magento.test:444/rest/all/V1';
+    private const MAGENTO_REST_API_BASE_URL = 'https://magento-app-1:444/rest/all/V1';
 
     private function __construct() {
         // no instances

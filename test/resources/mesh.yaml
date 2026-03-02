@@ -1,77 +1,194 @@
-default:
-  image:
-    repository: ghcr.io/streamx-com/streamx-blueprints
-    tag: latest-jvm
-
-sources:
-  resources-source:
-    outgoing:
-      - ref: "inbox.data"
-        produces:
-          - "com.streamx.blueprints.data.published.v1"
-          - "com.streamx.blueprints.data.unpublished.v1"
-
 descriptors:
+  relay:
+    type: processing
+    containers:
+      service:
+        incoming:
+          events: {}
+        outgoing:
+          relayed-events: {}
+
+  external-references-rewriter:
+    type: processing
+    containers:
+      processor:
+        image: ghcr.io/streamx-com/streamx-blueprints/external-references-rewriter:3.0.11-native
+        incoming:
+          incoming-resources: {}
+        outgoing:
+          outgoing-resources: {}
+          download-requests: {}
+
+  resource-downloader:
+    type: processing
+    containers:
+      processor:
+        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.11-native
+        incoming:
+          download-requests: {}
+        outgoing:
+          downloaded-pages: {}
+          downloaded-assets: {}
+          downloaded-web-resources: {}
+        environment:
+          STREAMX_BLUEPRINTS_RESOURCE_DOWNLOADER_DISABLE_CERTIFICATE_VALIDATION: "true"
+
   event-converter:
-    type: "processing"
-    incoming:
-      resources:
-        binding: "http-structured-json"
-    outgoing:
-      indexable-resources:
-        binding: "http-structured-json"
+    type: processing
+    containers:
+      processor:
+        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.11-native
+        incoming:
+          resources: {}
+        outgoing:
+          indexable-resources: {}
 
   opensearch-sink:
-    type: "edge"
-    incoming:
-      indexable-resources:
-        binding: "http-structured-json"
-      indexable-resource-fragments:
-        binding: "http-structured-json"
+    type: edge
+    volumes:
+      opensearch-data:
+        size: 10Gi
+    containers:
+      sink:
+        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.11-native
+        incoming:
+          indexable-resources: {}
+          indexable-resource-fragments: {}
+        autoRef:
+          - from: indexable-resource-fragments
+            to: indexable-resource-fragments-state
+            using: sync-state
+        servicePorts:
+          - 8082:8080
+        volumes:
+          - opensearch-data:/usr/share/opensearch/data
+        environment:
+          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_OWNER_SERVICE_NAME}.opensearch:9201
+          QUARKUS_ELASTICSEARCH_USERNAME: admin
+          QUARKUS_ELASTICSEARCH_PASSWORD: myStrongPassword123@456
+      opensearch:
+        image: registry.streamx.cloud/streamx-docker-hub-public-proxy/opensearchproject/opensearch:2.16.0
+        servicePorts:
+          - 9201:9201
+        volumes:
+          - opensearch-data:/usr/share/opensearch/data
+        environment:
+          network.host: 0.0.0.0
+          http.port: "9201"
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: myStrongPassword123@456
+
+  web-server-sink:
+    type: edge
+    volumes:
+      repository-volume: {}
+    containers:
+      sink:
+        image: ghcr.io/streamx-com/streamx-blueprints/web-server-sink:3.0.11-native
+        incoming:
+          resources: {}
+        servicePorts:
+          - 8083:8080
+        volumes:
+          - repository-volume:/srv/www
+        environment:
+          STREAMX_BLUEPRINTS_WEB_SERVER_SINK_STORAGE_ROOT_DIRECTORY: /srv/www
+      webserver:
+        image: registry.streamx.cloud/streamx-docker-hub-public-proxy/library/nginx:1.26.0
+        servicePorts:
+          - 8084:80
+        volumes:
+          - repository-volume:/usr/share/nginx/html
+
+sources:
+  magento:
+    outgoing:
+      - ref: inbox.data
+        produces:
+          - com.streamx.blueprints.data.published.v1
+          - com.streamx.blueprints.data.unpublished.v1
 
 ingestion:
   rest-ingestion:
     containers:
-      - environment:
+      proxy:
+        environment:
           QUARKUS_HTTP_AUTH_PERMISSION_BEARER_POLICY: permit
 
 processing:
-  blueprint-event-converter:
+  assets-relay:
+    descriptor: relay
     containers:
-      - image: event-converter
+      service:
+        incoming:
+          events:
+            ref: inbox.assets
+        outgoing:
+          relayed-events:
+            ref: outbox.assets
+
+  data-external-references-rewriter:
+    descriptor: external-references-rewriter
+    containers:
+      processor:
+        incoming:
+          incoming-resources:
+            ref: inbox.data
+        outgoing:
+          outgoing-resources:
+            ref: relay.data
+          download-requests:
+            ref: relay.download-requests
+        environment:
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_BASE_URL_FOR_RELATIVE_PATHS: https://magento-app-1:8443/
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_PROCESSABLE_PAYLOAD_TYPES: product/simple,product/master,category
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_JSON_EXTERNAL_RESOURCE_JSONPATH_SELECTORS: $..attributes[?(@.name=='small_image' || @.name=='thumbnail')].values.*.value,$..attributes[?(@.name=='small_image' || @.name=='thumbnail')].values.*.label,$..primaryimage.url,$..gallery.*.url
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_EMITTED_PAGE_TYPE: page/external
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_EMITTED_WEB_RESOURCE_TYPE: web-resource/external
+          STREAMX_BLUEPRINTS_EXTERNAL_REFERENCES_REWRITER_EMITTED_ASSET_TYPE: asset/external
+
+  resource-downloader:
+    descriptor: resource-downloader
+    containers:
+      processor:
+        incoming:
+          download-requests:
+            ref: relay.download-requests
+        outgoing:
+          downloaded-pages:
+            ref: inbox.pages
+          downloaded-assets:
+            ref: inbox.assets
+          downloaded-web-resources:
+            ref: inbox.web-resources
+
+  event-converter:
+    descriptor: event-converter
+    containers:
+      processor:
         incoming:
           resources:
-            ref: inbox.data
+            ref: relay.data
         outgoing:
           indexable-resources:
             ref: outbox.indexable-resources
 
 edge:
-  blueprint-opensearch-sink:
-    volumes:
-      - name: "repository-volume"
+  opensearch-sink:
+    descriptor: opensearch-sink
     containers:
-      - image: opensearch-sink
+      sink:
         incoming:
           indexable-resources:
             ref: outbox.indexable-resources
           indexable-resource-fragments:
             ref: outbox.indexable-resource-fragments
-        ports:
-          - "8082:8080"
-        volumes:
-          - "repository-volume:/usr/share/opensearch/data"
-        environment:
-          QUARKUS_ELASTICSEARCH_HOSTS: "blueprint-opensearch-sink.opensearch:9200"
-          STREAMX_DELIVERY_SERVICE_READINESS_CHECK_ENABLED: "false"
-      - name: "opensearch"
-        image: "docker.io/opensearchproject/opensearch:2.16.0"
-        ports:
-          - "9201:9200"
-          - "9301:9300"
-        volumes:
-          - "repository-volume:/usr/share/opensearch/data"
-        environment:
-          DISABLE_SECURITY_PLUGIN: "true"
-          OPENSEARCH_INITIAL_ADMIN_PASSWORD: "myStrongPassword123@456"
-          discovery.type: "single-node"
+
+  web-server-sink:
+    descriptor: web-server-sink
+    containers:
+      sink:
+        incoming:
+          resources:
+            ref: outbox.assets

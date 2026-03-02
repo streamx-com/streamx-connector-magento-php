@@ -24,6 +24,10 @@ class CatalogConfig extends BaseConfigurationReader
         return (bool)$this->getGlobalConfigValue('use_catalog_price_rules');
     }
 
+    public function useRelativeUrlsForImages(): bool {
+        return (bool)$this->getGlobalConfigValue('use_relative_urls_for_images');
+    }
+
     public function shouldExportProductsNotVisibleIndividually(): bool {
         return (bool)$this->getGlobalConfigValue('export_products_not_visible_individually');
     }

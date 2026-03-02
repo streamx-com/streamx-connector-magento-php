@@ -43,11 +43,11 @@ sed -i '' 's/password123/P@SSw0rd123/g' env/magento.env
 bin/download community 2.4.8
 
 ### Install the magento docker machinery
-bin/setup magento.test
+bin/setup magento-app-1
 
 ### Apply base urls into magento config database (by default both base urls are https://magento.test/)
-bin/magento setup:store-config:set --base-url=https://magento.test:444/
-bin/magento setup:store-config:set --base-url-secure=https://magento.test:444/
+bin/magento setup:store-config:set --base-url=http://magento-app-1:444/
+bin/magento setup:store-config:set --base-url-secure=https://magento-app-1:444/
 
 ### Increase Admin IU session timeout from 15 minutes to 24 hours, to avoid frequent redirects to login page
 bin/magento config:set admin/security/session_lifetime 86400
@@ -87,10 +87,10 @@ echo "Please start your local StreamX instance (using test/resources/mesh.yaml a
 read -rp "Press Enter when you're done..."
 
 # Make StreamX Ingestion host visible from Magento containers
-bash scripts/add-rest-ingestion-to-magento-network.sh
+bash scripts/add-streamx-containers-to-magento-network.sh
 
 echo "Configuring the Connector and setting up stores..."
-curl -X PUT https://magento.test:444/rest/all/V1/stores/setup
+curl -X PUT https://magento-app-1:444/rest/all/V1/init
 echo
 
 # Start RabbitMQ consumer

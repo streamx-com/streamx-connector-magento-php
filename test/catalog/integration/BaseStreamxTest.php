@@ -32,6 +32,7 @@ abstract class BaseStreamxTest extends TestCase {
     protected const PUBLISHING_EVENT_TYPE = 'com.streamx.blueprints.data.published.v1';
     protected const UNPUBLISHING_EVENT_TYPE = 'com.streamx.blueprints.data.unpublished.v1';
 
+    private const STREAMX_WEB_SINK_URL = "http://localhost:8083";
     private const STREAMX_SEARCH_SERVICE_URL_TEMPLATE = "http://localhost:9201/default/_search?q=_id:\"%s\"";
     private const WAIT_FOR_INGESTED_DATA_TIMEOUT_SECONDS = 8;
     private const SLEEP_MICROS_BETWEEN_DATA_INGESTION_CHECKS = 200_000;
@@ -96,6 +97,23 @@ abstract class BaseStreamxTest extends TestCase {
 
     protected function assertDataIsNotPublished(string $key): void {
         $this->assertDataIsUnpublished($key); // alias
+    }
+
+    protected function assertImageIsPublished(string $relativePath, int $timeoutSeconds = self::WAIT_FOR_INGESTED_DATA_TIMEOUT_SECONDS): void {
+        $url = self::STREAMX_WEB_SINK_URL . $relativePath;
+        $startTime = time();
+        $response = null;
+        while (time() - $startTime < $timeoutSeconds) {
+            $response = @file_get_contents($url);
+            if (!empty($response)) {
+                return;
+            }
+            usleep(self::SLEEP_MICROS_BETWEEN_DATA_INGESTION_CHECKS);
+        }
+
+        if (empty($response)) {
+            $this->fail("$url: not found");
+        }
     }
 
     protected function removeFromStreamX(string ...$keys): void {

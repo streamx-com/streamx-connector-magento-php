@@ -98,7 +98,7 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
 
         try {
             // when
-            shell_exec('docker pause rest-ingestion');
+            shell_exec('docker pause rest-ingestion.proxy');
             $this->rabbitMqSender->send(new IngestionRequest([$validIngestionEvent], parent::$store1Id));
 
             // then: the message should go through consecutive retry queues...
@@ -108,7 +108,7 @@ class RabbitMqIntegrationTest extends BaseAppEntityUpdateTest {
             self::assertTotalMessagesCount($this->retryQueue3, $retryQueue3TotalMessagesCountBefore + 1, $timeoutSeconds);
         } finally {
             // and when: cause of the error is gone
-            shell_exec('docker unpause rest-ingestion');
+            shell_exec('docker unpause rest-ingestion.proxy');
         }
 
         // then: the message should be processed

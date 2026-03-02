@@ -8,8 +8,8 @@
       "label": "Small",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg"
+          "value": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
+          "label": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg"
         }
       ],
       "isFacet": false
@@ -19,8 +19,8 @@
       "label": "Thumbnail",
       "values": [
         {
-          "value": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
-          "label": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg"
+          "value": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
+          "label": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg"
         }
       ],
       "isFacet": false
@@ -88,7 +88,7 @@
   "name": "Wayfarer Messenger Bag",
   "label": "Wayfarer Messenger Bag",
   "primaryImage": {
-    "url": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
+    "url": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
     "alt": "Image"
   },
   "description": "<p>Perfect for class, work or the gym, the Wayfarer Messenger Bag is packed with pockets. The dual-buckle flap closure reveals an organizational panel, and the roomy main compartment has spaces for your laptop and a change of clothes. An adjustable shoulder strap and easy-grip handle promise easy carrying.<\/p>\n<ul>\n<li>Multiple internal zip pockets.<\/li>\n<li>Made of durable nylon.<\/li>\n<\/ul>",
@@ -167,7 +167,7 @@
   ],
   "gallery": [
     {
-      "url": "https:\/\/magento.test:444\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
+      "url": "\/media\/catalog\/product\/m\/b\/mb05-black-0.jpg",
       "alt": "Image"
     }
   ],
