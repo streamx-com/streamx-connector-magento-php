@@ -47,7 +47,7 @@ class ProductUpdateTest extends BaseDirectDbEntityUpdateTest {
     /** @test */
     public function shouldPublishGroupedProductEditedDirectlyInDatabase() {
         $regexReplacements = self::$db->isEnterpriseMagento() ? [ // in enterprise magento DB, ID of the grouped product is 45, not 46 as in community version
-            '"id": "45",' => '"id": "46",',
+            '"id":"45",' => '"id":"46",',
             '-45"' => '-46"'
         ] : [];
         $this->shouldPublishProductEditedDirectlyInDatabase('Set of Sprite Yoga Straps', 'grouped', $regexReplacements);

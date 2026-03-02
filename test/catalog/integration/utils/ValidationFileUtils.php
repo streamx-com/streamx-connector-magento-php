@@ -11,21 +11,19 @@ trait ValidationFileUtils  {
         return file_get_contents("$validationFilesDir/$validationFileName");
     }
 
-    public function verifySameJsonsOrThrow(string $expectedFormattedJson, string $actualJson, array $regexReplacements = []): void {
-        $this->verifySameJsons($expectedFormattedJson, $actualJson, true, $regexReplacements);
+    public function verifySameJsonsOrThrow(string $expectedJson, string $actualJson, array $regexReplacements = []): void {
+        $this->verifySameJsons($expectedJson, $actualJson, true, $regexReplacements);
     }
 
-    public function verifySameJsonsSilently(string $expectedFormattedJson, string $actualJson, array $regexReplacements = []): bool {
-        return $this->verifySameJsons($expectedFormattedJson, $actualJson, false, $regexReplacements);
+    public function verifySameJsonsSilently(string $expectedJson, string $actualJson, array $regexReplacements = []): bool {
+        return $this->verifySameJsons($expectedJson, $actualJson, false, $regexReplacements);
     }
 
-    private function verifySameJsons(string $expectedFormattedJson, string $actualJson, bool $throwOnAssertionError, array $regexReplacements = []): bool {
-        $actualFormattedJson = JsonFormatter::formatJson($actualJson);
+    private function verifySameJsons(string $expectedJson, string $actualJson, bool $throwOnAssertionError, array $regexReplacements = []): bool {
         try {
-            $expected = self::standardizeNewlines($expectedFormattedJson);
-            // allow adjusting actual json to match expected validation json
-            $actual = self::standardizeNewlines(self::replaceRegexes($actualFormattedJson, $regexReplacements));
-            $this->assertEquals($expected, $actual);
+            $expectedJson = self::adjustExpectedJson($expectedJson);
+            $actualJson = self::adjustActualJson($actualJson, $regexReplacements);
+            $this->assertEquals($expectedJson, $actualJson);
             return true;
         } catch (ExpectationFailedException $e) {
             if ($throwOnAssertionError) {
@@ -33,6 +31,20 @@ trait ValidationFileUtils  {
             }
             return false;
         }
+    }
+
+    private function adjustExpectedJson(string $json): string {
+        $jsonArray = json_decode($json, true);
+        return self::toNormalizedJson($jsonArray);
+    }
+
+    private function adjustActualJson(string $json, array $regexReplacements = []): string {
+        $json = self::replaceRegexes($json, $regexReplacements);
+        $json = self::standardizeNewlines($json);
+
+        $jsonArray = json_decode($json, true);
+        self::removeFieldsAddedByOpensearchWrapper($jsonArray);
+        return self::toNormalizedJson($jsonArray);
     }
 
     private function standardizeNewlines(string $json): string {
@@ -44,5 +56,36 @@ trait ValidationFileUtils  {
             $json = preg_replace("|$regex|m", $replacement, $json);
         }
         return $json;
+    }
+
+    private static function toNormalizedJson(array $jsonArray): string {
+        self::normalizeArray($jsonArray);
+        return json_encode($jsonArray, JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * Removes fields added by streamx-docker-hub-public-proxy wrapper for opensearch
+     */
+    private static function removeFieldsAddedByOpensearchWrapper(array &$jsonArray): void {
+        unset($jsonArray['category']);
+        unset($jsonArray['ingested']);
+        foreach ($jsonArray as $key => $value) {
+            if (strpos($key, 'ft_') === 0) {
+                unset($jsonArray[$key]);
+            }
+        }
+    }
+
+    private static function normalizeArray(array &$jsonArray): void {
+        if (array_keys($jsonArray) !== range(0, count($jsonArray) - 1)) {
+            // sort associative arrays by key (don't sort items in indexed arrays)
+            ksort($jsonArray);
+        }
+
+        foreach ($jsonArray as &$value) {
+            if (is_array($value)) {
+                self::normalizeArray($value);
+            }
+        }
     }
 }

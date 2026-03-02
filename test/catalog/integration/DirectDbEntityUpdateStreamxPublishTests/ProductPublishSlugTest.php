@@ -85,9 +85,9 @@ class ProductPublishSlugTest extends BaseDirectDbEntityUpdateTest {
         // and:
         $expectedRegexReplacements = [
             // expect slugs different from those in validation file
-            '"slug": "' . $expectedProductSlug . '"' => '"slug": "' . self::DEFAULT_PRODUCT_SLUG . '"',
-            '"slug": "' . $expectedGearCategorySlug . '"' => '"slug": "' . self::DEFAULT_GEAR_CATEGORY_SLUG . '"',
-            '"slug": "' . $expectedBagsCategorySlug . '"' => '"slug": "' . self::DEFAULT_BAGS_CATEGORY_SLUG . '"',
+            '"slug":"' . $expectedProductSlug . '"' => '"slug":"' . self::DEFAULT_PRODUCT_SLUG . '"',
+            '"slug":"' . $expectedGearCategorySlug . '"' => '"slug":"' . self::DEFAULT_GEAR_CATEGORY_SLUG . '"',
+            '"slug":"' . $expectedBagsCategorySlug . '"' => '"slug":"' . self::DEFAULT_BAGS_CATEGORY_SLUG . '"',
             // the test also edits url key attribute of the product
             '"edited-product-url-key"' => '"joust-duffle-bag"'
         ];
