@@ -12,7 +12,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/external-references-rewriter:3.0.10-native
+        image: ghcr.io/streamx-com/streamx-blueprints/external-references-rewriter:3.0.11-native
         incoming:
           incoming-resources: {}
         outgoing:
@@ -23,7 +23,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.10-native # TODO when version with disabling certificate validation is released - use it
+        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.11-native
         incoming:
           download-requests: {}
         outgoing:
@@ -37,7 +37,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.10-native
+        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.11-native
         incoming:
           resources: {}
         outgoing:
@@ -50,7 +50,7 @@ descriptors:
         size: 10Gi
     containers:
       sink:
-        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.10-native
+        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.11-native
         incoming:
           indexable-resources: {}
           indexable-resource-fragments: {}
@@ -85,7 +85,7 @@ descriptors:
       repository-volume: {}
     containers:
       sink:
-        image: ghcr.io/streamx-com/streamx-blueprints/web-server-sink:3.0.10-native
+        image: ghcr.io/streamx-com/streamx-blueprints/web-server-sink:3.0.11-native
         incoming:
           resources: {}
         servicePorts:
