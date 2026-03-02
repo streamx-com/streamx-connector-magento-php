@@ -92,7 +92,7 @@ class CategoryUpdateTest extends BaseAppEntityUpdateTest {
 
     private function assertDataWithChangedSlugIsPublished(string $key, string $validationFile, string $originalSlug, string $expectedSlug): void {
         $this->assertExactDataIsPublished($key, $validationFile, [
-            '"slug": "' . $expectedSlug . '"' => '"slug": "' . $originalSlug . '"'
+            '"slug":"' . $expectedSlug . '"' => '"slug":"' . $originalSlug . '"'
         ]);
     }
 

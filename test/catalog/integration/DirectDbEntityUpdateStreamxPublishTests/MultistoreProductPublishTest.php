@@ -73,7 +73,7 @@ class MultistoreProductPublishTest extends BaseDirectDbEntityUpdateTest {
             // then
             $this->assertExactDataIsPublished(self::STORE_1_CODE . '_product:1', 'original-bag-product.json');
             $this->assertExactDataIsPublished(self::STORE_1_CODE . '_product:4', 'wayfarer-bag-product.json',  [
-                '"label": "Style"' => '"label": "Style Bags"' // test database contains an overridden label for this attribute for default store (ID=1)
+                '"label":"Style"' => '"label":"Style Bags"' // test database contains an overridden label for this attribute for default store (ID=1)
             ]);
             $this->assertExactDataIsPublished(self::STORE_1_CODE . '_product:60', 'original-hoodie-xl-gray-product.json');
             $this->assertExactDataIsPublished(self::STORE_1_CODE . '_product:61', 'original-hoodie-xl-orange-product.json');
@@ -81,7 +81,7 @@ class MultistoreProductPublishTest extends BaseDirectDbEntityUpdateTest {
 
             $this->assertExactDataIsPublished(self::STORE_2_CODE . '_product:1', 'original-bag-product.json');
             $this->assertExactDataIsPublished(self::STORE_2_CODE . '_product:4', 'wayfarer-bag-product.json', [
-                '"label": "Overridden label for Style Bags"' => '"label": "Style Bags"'
+                '"label":"Overridden label for Style Bags"' => '"label":"Style Bags"'
             ]);
             $this->assertExactDataIsPublished(self::STORE_2_CODE . '_product:60', 'original-hoodie-xl-gray-product.json');
             $this->assertExactDataIsPublished(self::STORE_2_CODE . '_product:61', 'original-hoodie-xl-orange-product.json');
@@ -151,7 +151,7 @@ class MultistoreProductPublishTest extends BaseDirectDbEntityUpdateTest {
             $this->assertExactDataIsPublished($expectedKeyForProduct1, 'added-minimal-product.json', [
                 // provide values for placeholders in the validation file
                 $sku1 => 'SKU',
-                '"id": "' . $product1Id . '"' => '"id": "123456789"',
+                '"id":"' . $product1Id . '"' => '"id":"123456789"',
                 'Name of Product A in second store' => 'PRODUCT_NAME',
                 "name-of-product-a-in-second-store-$product1Id" => 'PRODUCT_SLUG',
                 'Search' => 'VISIBILITY'
@@ -160,7 +160,7 @@ class MultistoreProductPublishTest extends BaseDirectDbEntityUpdateTest {
             $this->assertExactDataIsPublished($expectedKeyForProduct2, 'added-minimal-product.json', [
                 // provide values for placeholders in the validation file
                 $sku2 => 'SKU',
-                '"id": "' . $product2Id . '"' => '"id": "123456789"',
+                '"id":"' . $product2Id . '"' => '"id":"123456789"',
                 'Name of Product B in first store' => 'PRODUCT_NAME',
                 "name-of-product-b-in-first-store-$product2Id" => 'PRODUCT_SLUG',
                 'Catalog' => 'VISIBILITY'

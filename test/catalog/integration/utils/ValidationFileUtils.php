@@ -21,8 +21,8 @@ trait ValidationFileUtils  {
 
     private function verifySameJsons(string $expectedJson, string $actualJson, bool $throwOnAssertionError, array $regexReplacements = []): bool {
         try {
-            self::adjustExpectedJson($expectedJson);
-            self::adjustActualJson($actualJson, $regexReplacements);
+            $expectedJson = self::adjustExpectedJson($expectedJson);
+            $actualJson = self::adjustActualJson($actualJson, $regexReplacements);
             $this->assertEquals($expectedJson, $actualJson);
             return true;
         } catch (ExpectationFailedException $e) {
@@ -33,28 +33,29 @@ trait ValidationFileUtils  {
         }
     }
 
-    private function adjustExpectedJson(string &$json): void {
+    private function adjustExpectedJson(string $json): string {
         $jsonArray = json_decode($json, true);
-        $json = self::toNormalizedJson($jsonArray);
+        return self::toNormalizedJson($jsonArray);
     }
 
-    private function adjustActualJson(string &$json, array $regexReplacements = []): void {
-        self::replaceRegexes($json, $regexReplacements);
-        self::standardizeNewlines($json);
+    private function adjustActualJson(string $json, array $regexReplacements = []): string {
+        $json = self::replaceRegexes($json, $regexReplacements);
+        $json = self::standardizeNewlines($json);
 
         $jsonArray = json_decode($json, true);
         self::removeFieldsAddedByOpensearchWrapper($jsonArray);
-        $json = self::toNormalizedJson($jsonArray);
+        return self::toNormalizedJson($jsonArray);
     }
 
-    private function standardizeNewlines(string &$json): void {
-        $json = str_replace('\r\n', '\n', $json);
+    private function standardizeNewlines(string $json): string {
+        return str_replace('\r\n', '\n', $json);
     }
 
-    private function replaceRegexes(string &$json, array $regexReplacements): void {
+    private function replaceRegexes(string $json, array $regexReplacements): string {
         foreach ($regexReplacements as $regex => $replacement) {
             $json = preg_replace("|$regex|m", $replacement, $json);
         }
+        return $json;
     }
 
     private static function toNormalizedJson(array $jsonArray): string {
