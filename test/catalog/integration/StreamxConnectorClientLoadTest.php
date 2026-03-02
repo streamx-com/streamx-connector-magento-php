@@ -40,9 +40,9 @@ class StreamxConnectorClientLoadTest extends BaseStreamxTest {
         $client->publish($entities, ProductIndexer::INDEXER_ID, $store);
 
         // then
-        for ($i = 0; $i < $entitiesToPublishInBatch; $i++) {
+        for ($i = $entitiesToPublishInBatch - 1; $i >= 0; $i--) {
             $this->assertExactDataIsPublished(self::expectedStreamxProductKey($i), 'original-hoodie-product.json', [
-                '^    "id":"'. $i . '",' => '    "id":"62",' // 62 is the product ID in validation file
+                '"sku":"MH01","id":"'. $i . '",' => '"sku":"MH01","id":"62",' // 62 is the product ID in validation file
             ]);
         }
 
