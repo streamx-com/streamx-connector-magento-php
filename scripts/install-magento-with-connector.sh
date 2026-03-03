@@ -83,7 +83,7 @@ bash scripts/reload-magento-modules.sh
 
 # Additional steps
 echo "Installation done"
-echo "Please start your local StreamX instance (using test/resources/mesh.yaml as minimal mesh setup)"
+echo "Please start your local StreamX instance (you can use test/resources/mesh.yaml or test/resources/mesh-light.yaml as minimal mesh setup)"
 read -rp "Press Enter when you're done..."
 
 # Make StreamX Ingestion host visible from Magento containers
