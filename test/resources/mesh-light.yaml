@@ -1,0 +1,84 @@
+descriptors:
+  event-converter:
+    type: processing
+    containers:
+      processor:
+        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.11-native
+        incoming:
+          resources: {}
+        outgoing:
+          indexable-resources: {}
+
+  opensearch-sink:
+    type: edge
+    volumes:
+      opensearch-data:
+        size: 10Gi
+    containers:
+      sink:
+        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.11-native
+        incoming:
+          indexable-resources: {}
+          indexable-resource-fragments: {}
+        autoRef:
+          - from: indexable-resource-fragments
+            to: indexable-resource-fragments-state
+            using: sync-state
+        servicePorts:
+          - 8082:8080
+        volumes:
+          - opensearch-data:/usr/share/opensearch/data
+        environment:
+          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_OWNER_SERVICE_NAME}.opensearch:9201
+          QUARKUS_ELASTICSEARCH_USERNAME: admin
+          QUARKUS_ELASTICSEARCH_PASSWORD: myStrongPassword123@456
+      opensearch:
+        image: docker.io/opensearchproject/opensearch:2.16.0
+        servicePorts:
+          - 9201:9201
+        volumes:
+          - opensearch-data:/usr/share/opensearch/data
+        environment:
+          network.host: 0.0.0.0
+          http.port: "9201"
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: myStrongPassword123@456
+
+sources:
+  magento:
+    outgoing:
+      - ref: inbox.data
+        produces:
+          - com.streamx.blueprints.data.published.v1
+          - com.streamx.blueprints.data.unpublished.v1
+
+ingestion:
+  rest-ingestion:
+    containers:
+      proxy:
+        environment:
+          QUARKUS_HTTP_AUTH_PERMISSION_BEARER_POLICY: permit
+
+processing:
+  event-converter:
+    descriptor: event-converter
+    containers:
+      processor:
+        incoming:
+          resources:
+            ref: inbox.data
+        outgoing:
+          indexable-resources:
+            ref: outbox.indexable-resources
+
+edge:
+  opensearch-sink:
+    descriptor: opensearch-sink
+    containers:
+      sink:
+        incoming:
+          indexable-resources:
+            ref: outbox.indexable-resources
+          indexable-resource-fragments:
+            ref: outbox.indexable-resource-fragments
