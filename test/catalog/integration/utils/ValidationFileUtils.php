@@ -21,8 +21,8 @@ trait ValidationFileUtils  {
 
     private function verifySameJsons(string $expectedJson, string $actualJson, bool $throwOnAssertionError, array $regexReplacements = []): bool {
         try {
-            $expectedJson = self::adjustExpectedJson($expectedJson);
-            $actualJson = self::adjustActualJson($actualJson, $regexReplacements);
+            self::adjustExpectedJson($expectedJson);
+            self::adjustActualJson($actualJson, $regexReplacements);
             $this->assertEquals($expectedJson, $actualJson);
             return true;
         } catch (ExpectationFailedException $e) {
@@ -33,47 +33,30 @@ trait ValidationFileUtils  {
         }
     }
 
-    private function adjustExpectedJson(string $json): string {
-        $jsonArray = json_decode($json, true);
-        return self::toNormalizedJson($jsonArray);
+    private function adjustExpectedJson(string &$json): void {
+        self::normalizeJson($json);
     }
 
-    private function adjustActualJson(string $json, array $regexReplacements = []): string {
-        $json = self::replaceRegexes($json, $regexReplacements);
-        $json = self::standardizeNewlines($json);
-
-        $jsonArray = json_decode($json, true);
-        self::removeFieldsAddedByOpensearchWrapper($jsonArray);
-        return self::toNormalizedJson($jsonArray);
+    private function adjustActualJson(string &$json, array $regexReplacements = []): void {
+        self::replaceRegexes($json, $regexReplacements);
+        self::standardizeNewlines($json);
+        self::normalizeJson($json);
     }
 
-    private function standardizeNewlines(string $json): string {
-        return str_replace('\r\n', '\n', $json);
-    }
-
-    private function replaceRegexes(string $json, array $regexReplacements): string {
+    private function replaceRegexes(string &$json, array $regexReplacements): void {
         foreach ($regexReplacements as $regex => $replacement) {
             $json = preg_replace("|$regex|m", $replacement, $json);
         }
-        return $json;
     }
 
-    private static function toNormalizedJson(array $jsonArray): string {
+    private function standardizeNewlines(string &$json): void {
+        $json = str_replace('\r\n', '\n', $json);
+    }
+
+    private function normalizeJson(string &$json): void {
+        $jsonArray = json_decode($json, true);
         self::normalizeArray($jsonArray);
-        return json_encode($jsonArray, JSON_PRETTY_PRINT);
-    }
-
-    /**
-     * Removes fields added by streamx-docker-hub-public-proxy wrapper for opensearch
-     */
-    private static function removeFieldsAddedByOpensearchWrapper(array &$jsonArray): void {
-        unset($jsonArray['category']);
-        unset($jsonArray['ingested']);
-        foreach ($jsonArray as $key => $value) {
-            if (strpos($key, 'ft_') === 0) {
-                unset($jsonArray[$key]);
-            }
-        }
+        $json = json_encode($jsonArray, JSON_PRETTY_PRINT);
     }
 
     private static function normalizeArray(array &$jsonArray): void {

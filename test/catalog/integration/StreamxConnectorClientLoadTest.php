@@ -16,6 +16,7 @@ class StreamxConnectorClientLoadTest extends BaseStreamxTest {
     private const WRONG_INGESTION_PORT = 1234;
 
     /** @test */
+    // Note: to avoid potential timeouts - run this test on mesh-light.yaml (without downloading images)
     public function shouldPublishBigBatchesOfProductsWithoutErrors() {
         // given
         $bigProductJson = $this->readValidationFileContent('original-hoodie-product.json');

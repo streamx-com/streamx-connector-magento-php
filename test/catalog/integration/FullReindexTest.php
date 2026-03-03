@@ -13,6 +13,7 @@ class FullReindexTest extends BaseStreamxConnectorPublishTest {
     const INDEXER_IDS = [ProductIndexer::INDEXER_ID];
 
     /** @test */
+    // Note: to avoid potential timeouts - run this test on mesh-light.yaml (without downloading images)
     public function shouldReindexAllProducts() {
         // given: we will test some selected products
         $simpleProductId = self::$db->getProductId('Joust Duffle Bag');

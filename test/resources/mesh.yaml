@@ -67,7 +67,7 @@ descriptors:
           QUARKUS_ELASTICSEARCH_USERNAME: admin
           QUARKUS_ELASTICSEARCH_PASSWORD: myStrongPassword123@456
       opensearch:
-        image: registry.streamx.cloud/streamx-docker-hub-public-proxy/opensearchproject/opensearch:2.16.0
+        image: docker.io/opensearchproject/opensearch:2.16.0
         servicePorts:
           - 9201:9201
         volumes:
@@ -95,7 +95,7 @@ descriptors:
         environment:
           STREAMX_BLUEPRINTS_WEB_SERVER_SINK_STORAGE_ROOT_DIRECTORY: /srv/www
       webserver:
-        image: registry.streamx.cloud/streamx-docker-hub-public-proxy/library/nginx:1.26.0
+        image: docker.io/library/nginx:1.26.0
         servicePorts:
           - 8084:80
         volumes:
