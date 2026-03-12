@@ -8,11 +8,11 @@ It's designed to work with PHP Storm IDE.
    - under Configuration enable the `Filter debug connection by IDE key`
    - add new server: host = `magento-app-1`, port = `444`, debugger = `Xdebug`
    - check `Use path mappings checkbox`
-   - add mapping from `[your full local path to streamx-connector-magento]/src` to `/var/www/html/app/code/StreamX/Connector/src`
-   - add mapping from `[your full local path to streamx-connector-magento]/connector-test-endpoints` to `/var/www/html/app/code/StreamX/ConnectorTestEndpoints`
+   - add mapping from `[your full local path to streamx-connector-magento-php]/src` to `/var/www/html/app/code/StreamX/Connector/src`
+   - add mapping from `[your full local path to streamx-connector-magento-php]/connector-test-endpoints` to `/var/www/html/app/code/StreamX/ConnectorTestEndpoints`
    - click OK
    - then, for the `IDE key (session id)` enter: `PHPSTORM`
-   - then open the server settings again, to map also `[your full local path to streamx-connector-magento]/magento/src` to `/var/www/html`.
+   - then open the server settings again, to map also `[your full local path to streamx-connector-magento-php]/magento/src` to `/var/www/html`.
      - if no such path is available to be selected in the window - as a workaround add the mapping manually:
      - open `.idea/workspace.xml` file in a text editor (the file may be hidden)
      - below the existing mapping: `<mapping local-root="$PROJECT_DIR$/src" remote-root="/var/www/html/app/code/StreamX/Connector/src" />`
