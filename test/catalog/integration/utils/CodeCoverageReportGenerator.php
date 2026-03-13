@@ -183,7 +183,7 @@ final class CodeCoverageReportGenerator {
     }
 
     private static function getLocalConnectorRootDir(): string {
-        return FileUtils::findFolder('streamx-connector-magento');
+        return FileUtils::findFolder('streamx-connector-magento-php');
     }
 
     private static function getCoverageFilesDirectory(string $localConnectorRootDir): string {

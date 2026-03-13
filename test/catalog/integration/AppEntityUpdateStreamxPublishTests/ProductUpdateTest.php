@@ -17,7 +17,7 @@ class ProductUpdateTest extends BaseAppEntityUpdateTest {
     public function shouldPublishSimpleProductEditedUsingMagentoApplication() {
         $this->shouldPublishProductEditedUsingMagentoApplication('Joust Duffle Bag', 'bag');
 
-        // and
+        // and: note: this can be tested only with mesh.yaml (not with mesh-light.yaml) - resource-downloader service is needed
         $this->assertImageIsPublished('/media/catalog/product/m/b/mb01-blue-0.jpg');
     }
 

@@ -162,7 +162,7 @@ class Product
     }
 
     /**
-     * @param array $attributeIds
+     * @param int[] $attributeIds
      * @param int $storeId
      * @return int[]
      */

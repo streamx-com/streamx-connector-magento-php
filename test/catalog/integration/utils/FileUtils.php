@@ -30,7 +30,7 @@ final class FileUtils {
     }
 
     public static function readSourceFileContent(string $sourceFilePathRelativeToProjectRootDir): string {
-        $projectRootDir = self::findFolder('streamx-connector-magento');
+        $projectRootDir = self::findFolder('streamx-connector-magento-php');
         $sourceFileAbsolutePath = "$projectRootDir/$sourceFilePathRelativeToProjectRootDir";
         return file_get_contents($sourceFileAbsolutePath);
     }
