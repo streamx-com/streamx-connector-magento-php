@@ -12,7 +12,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/external-references-rewriter:3.0.13-native
+        image: ghcr.io/streamx-com/streamx-blueprints/external-references-rewriter:3.0.18-native
         incoming:
           incoming-resources: {}
         outgoing:
@@ -23,7 +23,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.13-native
+        image: ghcr.io/streamx-com/streamx-blueprints/resource-downloader:3.0.18-native
         incoming:
           download-requests: {}
         outgoing:
@@ -37,7 +37,7 @@ descriptors:
     type: processing
     containers:
       processor:
-        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.13-native
+        image: ghcr.io/streamx-com/streamx-blueprints/event-converter:3.0.18-native
         incoming:
           resources: {}
         outgoing:
@@ -50,7 +50,7 @@ descriptors:
         size: 10Gi
     containers:
       sink:
-        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.13-native
+        image: ghcr.io/streamx-com/streamx-blueprints/opensearch-sink:3.0.18-native
         incoming:
           indexable-resources: {}
           indexable-resource-fragments: {}
@@ -63,7 +63,7 @@ descriptors:
         volumes:
           - opensearch-data:/usr/share/opensearch/data
         environment:
-          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_OWNER_SERVICE_NAME}.opensearch:9201
+          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_SERVICE_ID}.opensearch:9201
           QUARKUS_ELASTICSEARCH_USERNAME: admin
           QUARKUS_ELASTICSEARCH_PASSWORD: myStrongPassword123@456
       opensearch:
@@ -85,7 +85,7 @@ descriptors:
       repository-volume: {}
     containers:
       sink:
-        image: ghcr.io/streamx-com/streamx-blueprints/web-server-sink:3.0.13-native
+        image: ghcr.io/streamx-com/streamx-blueprints/web-server-sink:3.0.18-native
         incoming:
           resources: {}
         servicePorts:

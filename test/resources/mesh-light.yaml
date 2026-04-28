@@ -29,7 +29,7 @@ descriptors:
         volumes:
           - opensearch-data:/usr/share/opensearch/data
         environment:
-          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_OWNER_SERVICE_NAME}.opensearch:9201
+          QUARKUS_ELASTICSEARCH_HOSTS: ${STREAMX_SERVICE_ID}.opensearch:9201
           QUARKUS_ELASTICSEARCH_USERNAME: admin
           QUARKUS_ELASTICSEARCH_PASSWORD: myStrongPassword123@456
       opensearch:
